@@ -1,0 +1,281 @@
+.navbar-nav>li.selected>a {
+    color: #fff;
+    font-weight: bold;
+}
+
+.breadcrumb {
+    padding: 0;
+    margin-bottom: 0;
+    background-color: #F8F8F8;
+    font-size: 1.5rem;
+}
+.panel-default>.panel-heading {
+    border: none;
+    background-color: #F8F8F8;
+}
+
+.panel-default {
+    border: none;
+    box-shadow: none;
+}
+
+.dropdown-menu {
+    width: 100%;
+}
+
+.manage-nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    margin-bottom: 0;
+    border: none;
+}
+
+.navbar-inverse .navbar-brand {
+    color: #fff;
+    background-color: #BD2D30;
+}
+
+.manage-location {
+    margin: 50px 0 0 0;
+    border-bottom: none;
+}
+.manage-location .panel-heading {
+    padding: 5px 15px;
+}
+
+.search-form {
+    float: left;
+    padding: 10px 0;
+    border-bottom: solid 1px #ddd;
+}
+
+.search-form .input-group {
+    float: left;
+    width: 15%;
+    min-width: 246px;
+    margin: 0 8px 5px 0;
+}
+
+.search-form .input-group input {
+    border-radius: 4px;
+}
+.search-form .btn-group {
+    display: table-cell;
+    vertical-align: top;
+}
+
+.search-form .btn-primary {
+    margin-bottom: 5px;
+}
+
+.search-form .btn.dropdown-toggle,
+.modify .btn.dropdown-toggle {
+    width: 100%;
+    text-align: right;
+}
+
+.search-form .btn-group .btn.dropdown-toggle {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.btn-group .btn .dropdown-text {
+    float: left;
+    max-width: 165px;
+    text-align: left;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.manage-bottom {
+    margin: 0;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+}
+.manage-bottom .panel-footer {
+    padding: 5px;
+}
+.manage-bottom .panel-footer p {
+    margin: 0;
+    text-align: center;
+    color: #777;
+}
+
+
+.time-split {
+    margin-left: -10px;
+}
+
+
+.modal-title {
+    font-weight:bold;
+}
+.modify-table {
+    border:1px solid #ddd;
+    border-radius:5px;
+    border-collapse: collapse;
+}
+.modify-table tr td {
+    border:1px solid #ddd;
+    padding:10px 0 10px 10px;
+}
+.modify-table tr th {
+    width:150px;
+    border:1px solid #ddd;
+    text-align:right;
+    padding:5px 10px 5px 0;
+    background:#f5f5f5;
+}
+.modify input,
+.modify textarea,
+.modify .btn-group {
+    width: 80%;
+}
+.modify .form-group {
+    margin-bottom: 0;
+}
+.modify .help-block {
+    margin: 0;
+    font-size: 12px;
+}
+
+.color-picker {
+    float: right;
+    margin-right: 20px;
+    width: 40px;
+    height: 35px;
+    border: solid 1px #DFDFDF;
+    cursor: pointer;
+}
+
+.browse-file {
+    background: url('../img/quick-icon.jpg') no-repeat scroll 0 0 rgba(0, 0, 0, 0);
+    height: 86px;
+    width: 86px;
+}
+.uploadfile {
+    height: 0;
+}
+.browse-file .uploadfilebtn {
+    width: 86px;
+    height: 86px;
+}
+.modify-icon {
+    position:relative;
+    width:108px;
+}
+.modify-icon img {
+    display:block;
+    margin:0;
+    padding:0;
+    width:106px;
+    height:auto;
+    background-color: #ccc;
+}
+.del-img {
+    position:absolute;
+    display:block;
+    top:8px;
+    right:10px;
+    height:16px;
+    width:16px;
+}
+
+.panel-body {
+    min-width: 1000px;
+}
+
+.dataTables_wrapper .row:first-child {
+    float: left;
+    margin-top: 5px;
+}
+
+.dataTables_wrapper .btn-group .btn {
+    padding: 3px 12px;
+}
+
+#search-btns {
+    float: right;
+    padding: 13px 0 0 0;
+}
+
+#search-btns .btn {
+    margin-bottom: 5px;
+}
+
+.dataTables_length {
+    display: inline-block;
+    margin-top: 10px;
+}
+
+.valid-required {
+    display: inline-block;
+    padding: 1px 5px;
+    color: #a94442;
+}
+
+.column-filed {
+    display: block;
+    width: 100%;
+    max-width: 400px;
+}
+.column-filed.align-left {
+    text-align: left;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.column-filed.align-right {
+    text-align: right;
+}
+.column-filed.align-center {
+    text-align: center;
+}
+.column-filed img {
+    width: 60px;
+    height: 60px;
+    background-color: #ccc;
+}
+
+#select-frame {
+    width: 100%;
+    height: 800px;
+    border: none;
+}
+
+.modal-dialog {
+    margin: 10px auto 0;
+}
+.modal-dialog.large {
+    width: 86%;
+}
+.pagination>input, .pagination>span {
+    position: relative;
+    float: left;
+    padding: 6px 12px;
+    margin-left: -1px;
+    line-height: 1.42857143;
+    color: #428bca;
+    text-decoration: none;
+    background-color: #fff;
+    border: 1px solid #ddd;
+}
+
+thead > tr > th {
+    text-align: center;
+}
+
+.select-wrap {
+    text-align: center;
+}
+
+input[type=checkbox] {
+    vertical-align: top;
+    cursor: pointer;
+}
+
+.table .btn-wrap {
+    text-align: center;
+}

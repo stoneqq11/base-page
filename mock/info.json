@@ -1,0 +1,14 @@
+{
+	"code": 200,
+	"message": "",
+	"value": {
+		"id": 1,
+		"sort": 1,
+		"image": "https://ss1.bdstatic.com/5eN1bjq8AAUYm2zgoY3K/r/www/cache/static/protocol/https/home/img/qrcode/zbios_efde696.png",
+		"title": "title1",
+		"rule": "rule1",
+		"startTime": 1497929940058,
+		"endTime": 1497929940058,
+		"status": 0
+	}
+}
