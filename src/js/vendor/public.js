@@ -258,7 +258,8 @@ var pluginUtil = {
             ajax: {
                 url: settings.ajaxUrl,
                 data: function (data) {
-                    return {param: $.extend(data, settings.argument)};
+                    console.log($.extend(data, settings.argument))
+                    return $.extend(data, settings.argument);
                 },
                 dataSrc: function (json) {
                     json.recordsTotal = json.value.count;
@@ -802,6 +803,16 @@ $(function () {
             $(".opt-search").trigger("click");
         }
     });
+
+    $(document).ajaxSuccess(function (event, xhr, settings) {
+        var result = JSON.parse(xhr.responseText)
+        if (result.code == 401) {
+            var l = encodeURIComponent(window.location.href)
+            window.location = 
+                'https://login.flyme.cn/login/login.html?service=NEWS&appuri=' 
+                + l + '&useruri=' + l + '&sid=unionlogin';
+        }
+    })
 
     $.getJSON('./menu.json', function (json) {
         $('#nav-menu').append(MU.buildNav(json));
