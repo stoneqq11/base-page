@@ -258,7 +258,6 @@ var pluginUtil = {
             ajax: {
                 url: settings.ajaxUrl,
                 data: function (data) {
-                    console.log($.extend(data, settings.argument))
                     return $.extend(data, settings.argument);
                 },
                 dataSrc: function (json) {
@@ -804,8 +803,11 @@ $(function () {
         }
     });
 
-    $(document).ajaxSuccess(function (event, xhr, settings) {
-        var result = JSON.parse(xhr.responseText)
+    $(document).ajaxComplete(function (event, xhr, settings) {
+        var result = {}
+        try {
+            result = JSON.parse(xhr.responseText)
+        } catch(e) {}
         if (result.code == 401) {
             var l = encodeURIComponent(window.location.href)
             window.location = 

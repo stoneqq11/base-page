@@ -1052,7 +1052,7 @@
          *
          */
         viewData: function (bd, page) {
-            if ( bd.code != 200 ) return;
+            if ( bd.code != 200 ) return [];
 
             var views = [];
             bd.value.data && $.each(bd.value.data, function (idx, item) {
