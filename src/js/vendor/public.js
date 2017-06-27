@@ -261,8 +261,6 @@ var pluginUtil = {
                     return $.extend(data, settings.argument);
                 },
                 dataSrc: function (json) {
-                    json.recordsTotal = json.value.count;
-                    json.recordsFiltered = json.value.count;
                     return callback(json, settings.commonPage);
                 }
             },
