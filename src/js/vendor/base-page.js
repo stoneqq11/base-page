@@ -116,7 +116,11 @@
             //      isHide {?boolean} 是否隐藏该操作
             //      isBatch {?boolean} 是否批量操作
             //      resetCheck {?boolean} 批量操作后是否清空已选项
-            //      selectUrl {?url} 选择操作url
+            //      selectChild: {
+            //          pageUrl: '/index.html?page=t-t&pageNumber=100',
+            //          dataUrl: '/manage/homepage/list',
+            //          parentId: 'parentId'
+            //      }
             //}, {}]
             actions: [],
 
@@ -269,8 +273,8 @@
                     return;
                 }
 
-                if (item.selectUrl) {
-                    item.selectUrl += '&isOperate=false&isBatch=true&isSelect=true'
+                if (item.selectChild && item.selectChild.pageUrl) {
+                    item.selectChild.pageUrl += '&isOperate=false&isBatch=true&isSelect=true'
                 }
 
                 if (!item.clz && constants.OPT_MAP[item.action]) {
@@ -993,7 +997,7 @@
          */
         optCustom: function (action, $o) {
             var isBatch = !action.single && action.isBatch;
-            var isSelect = action.single && action.selectUrl;
+            var isSelect = action.single && action.selectChild.pageUrl;
             var selectData = getSelectData();
             var _html = this.getOptHtml(action.action);
             var _this = this;
@@ -1016,7 +1020,8 @@
             } else {
                 if (isSelect) {
                     $('#common-modal').modal('show').find('.modal-dialog').addClass('large');
-                    $('#common-body').html(MU.tpl('select-page-tpl', {src: action.selectUrl}));
+                    $('#common-body').html(MU.tpl('select-page-tpl', {src: isSelect}));
+                    window.selectChildData = $.extend(true, {id: $o.data(this.idFiled)}, action.selectChild);
                     $('#select-frame').load(function () {
                         $('.manage-nav,.manage-location,.manage-bottom', window.frames['selectFrame'].document).hide();
                         action.initFn && action.initFn($o);
@@ -1061,9 +1066,19 @@
                     refresh: fresh,
                     cols: this.tableConfig.colums,
                     order: this.config.order
-                };
+                },
+                select = window.parent && window.parent.selectChildData,
+                isSelect = CU.getUrlParam('isSelect');
 
-            pluginUtil.dataTable(settings);
+            if (isSelect && select) {
+                $.get(select.dataUrl + (select.dataUrl.indexOf('?') >= 0 ? '&' : '?') 
+                    + select.parentId + '=' + select.id, function (result) {
+                        _this.selectInitData = result.value.data;
+                        pluginUtil.dataTable(settings);
+                    })
+            } else {
+                pluginUtil.dataTable(settings);
+            }
         },
 
         /**
@@ -1092,10 +1107,14 @@
                 // 批量操作
                 if (page.config.isBatch) {
                     var attrs = [];
+                    var checked = _.find(page.selectInitData || [], function (s) {
+                        return s[page.idFiled] === data[page.idFiled]
+                    }) ? 'checked' : '';
                     $.each(page.config.batchFields, function () {
                         attrs.push('data-' + this + '="' + item[this] + '"');
                     });
-                    filedArr.push('<div class="select-wrap"><input type="checkbox" class="select-data" ' + attrs.join(' ') + '/></div>');
+                    filedArr.push('<div class="select-wrap"><input type="checkbox" ' 
+                        + checked + ' class="select-data" ' + attrs.join(' ') + '/></div>');
                 }
                 data.batch = filedArr.join('');
 

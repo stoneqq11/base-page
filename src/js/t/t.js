@@ -107,7 +107,11 @@ var config = {
             single: true,
             clz: 'info',
             url: '/manage/homepage/select',
-            selectUrl: '/index.html?page=t-t',
+            selectChild: {
+                pageUrl: '/index.html?page=t-t&pageNumber=100',
+                dataUrl: '/manage/homepage/list',
+                parentId: 'parentId'
+            },
             callbackFn: function ($btn, selectData) {
                 console.log($btn);
                 console.log(selectData)
