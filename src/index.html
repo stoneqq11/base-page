@@ -129,6 +129,13 @@
 <input type="{{= data.type}}" name="{{= data.name}}" class="form-control"
         value="{{= data.value}}" check-type="{{= data.checkType}}" />
 </script>
+<script id="checkbox-tpl" type="text/template">
+<div class="checkbox-wrap" data-name="{{= data.name}}" data-enum="{{= data.enumName}}" 
+        data-sel-all="{{= data.selAll}}" data-enum-id="{{= data.enumId}}" data-enum-text="{{= data.enumText}}">
+    <input type="hidden" name="{{= data.name + '_check'}}" class="form-control" value="{{= data.value}}"
+        check-type="{{= data.checkType}}" />
+</div>
+</script>
 <script id="textarea-tpl" type="text/template">
 <textarea class="form-control" name="{{= data.name}}" rows="3"
         check-type="{{= data.checkType}}">{{= data.value}}</textarea>

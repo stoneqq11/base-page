@@ -691,6 +691,56 @@ var manageUtil = {
     },
 
     /**
+     * checkbox多选初始化
+     * @param $check {jquery object} 初始化的checkbox容器
+     * @param enumDatas {array} 枚举数据
+     */
+    initCheckbox: function ($check, enumDatas) {
+        var _html = [],
+            data = $check.data(),
+            value = data.enumId || 'value',
+            text = data.enumText || 'text',
+            name = data.name,
+            selAllId,
+            $value = $check.find('[name='+name+'_check]'),
+            values = ($value.val() || '').split(CONSTANTS.CHECKBOX_SPLIT)
+
+        for (var i = 0; i < enumDatas.length; i++) {
+            var d = enumDatas[i]
+            var id = name + '_' + d[value]
+            _html.push('<div><input type="checkbox" id="' + id + '" name="' + name + '" value="' + d[value] + '" ')
+            _html.push($.inArray(d[value]+'', values) != -1 ? 'checked ' : '')
+            _html.push('/><label for="' + id + '" title="' + d[text] + '">' + d[text] + '</label></div>')
+        }
+
+        if (data.selAll) {
+            selAllId = 'selAll_' + name
+            _html.unshift('<div class="sel-all"><input type="checkbox" id="' 
+                + selAllId + '" /><label for="' + selAllId + '">全选</label></div>')
+        }
+
+        $check.append(_html.join(''))
+
+        var $items = $check.find('input[type=checkbox]:not(#' + selAllId + ')')
+        $check.find(':checkbox').off('click').click(function(){
+            setTimeout(function(){
+                var vs = []
+                $items.filter(':checked').each(function(){
+                    vs.push($(this).val())
+                })
+                $value.val(vs.join(CONSTANTS.CHECKBOX_SPLIT))
+            }, 0)
+        })
+
+        if (selAllId) {
+            $('#' + selAllId).click(function(){
+                var _checked = $(this).is(':checked')
+                $items.prop('checked', _checked)
+            })
+        }
+    },
+
+    /**
      * 图片上传完成后的回调
      * @param $icon {jquery object} 上传按钮
      * @param url {url} 上传图片返回的url
@@ -758,7 +808,8 @@ var CONSTANTS = {
     TIME_START_HOLDER: '-开始',
     TIME_END_HOLDER: '-结束',
     TIME_START_TEXT: '(>=)',
-    TIME_END_TEXT: '(<=)'
+    TIME_END_TEXT: '(<=)',
+    CHECKBOX_SPLIT: ',,,,,'
 }
 
 Date.prototype.format = function (format) {

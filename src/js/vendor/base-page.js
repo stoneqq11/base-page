@@ -14,6 +14,7 @@
             text: {tpl: 'input-tpl', columnClz: 'align-left'},
             select: {tpl: 'select-tpl', columnClz: 'align-center'},
             radio: {tpl: 'input-tpl', columnClz: 'align-center'},
+            checkbox: {tpl: 'checkbox-tpl'},
             date: {tpl: 'date-tpl', columnClz: 'align-center', type: 'text'},
             time: {tpl: 'date-tpl', columnClz: 'align-center', type: 'text'},
             textarea: {tpl: 'textarea-tpl', columnClz: 'text'},
@@ -72,7 +73,8 @@
             // fileds: [{
             //      name {!string} 字段名称，要求与接口传递字段保持一致
             //      text {!string} 字段中文名称
-            //      type {?string} 字段类型，默认值text，可选值【text||hidden||textarea||select||img||color||radio||date||time||number】
+            //      type {?string} 字段类型，默认值text，
+            //            可选值【text||hidden||textarea||select||img||color||radio||checkbox||date||time||number】
             //      isId: {?boolean} 是否主键字段
             //      value {?*} 初始值
             //      width {?string} 列宽【10%||100px】
@@ -478,6 +480,9 @@
                     item.dataType = item.type;
                     item.value = _this.formatColumn(item.value, item, 'upd');
                 }
+                if ( item.type == 'checkbox' ) {
+                    item.value = (item.value || []).join(CONSTANTS.CHECKBOX_SPLIT);
+                }
 
                 item.type = constants.FILED_DEFAULT_MAP[item.type].type || item.type;
 
@@ -723,6 +728,29 @@
 
                 _url && manageUtil.imgUploaded($this, _url);
             });
+
+            //checkbox
+            $('.checkbox-wrap', container).each(function(){
+                var $this = $(this),
+                    data = $this.data(),
+                    enumName = data.enum,
+                    enumDatas = []
+
+                if (enums[enumName]) {
+                    manageUtil.initCheckbox($this, enums[enumName])
+                } else if (/\//.test(enumName)) {
+                    $.get(enumName, function(result){
+                        var datas = result.value.data
+                        $.each(datas, function () {
+                            data.enumId && (this.value = this[data.enumId]);
+                            data.enumText && (this.name = this[data.enumText]);
+                        });
+                        self.config.commonSelectMap[data.name] = datas
+                        manageUtil.initCheckbox($this, datas)
+                    })
+                }
+            })
+
         },
 
         /**
@@ -1159,15 +1187,22 @@
                         if (enums[filed.enumName]) {
                             _text = enums.getText(filed.enumName, val);
                         } else {
-                            $.each(this.config.commonSelectMap, function (i, n) {
-                                $.each(n,function (j,index) {
-                                    if (index.value == val) {
-                                        _text = index.name;
-                                    }
-                                });
-                            });
+                            _text = this.findSelectText(val)
                         }
                         break;
+                    case 'checkbox':
+                        var vals = val.split(CONSTANTS.CHECKBOX_SPLIT),
+                            texts = []
+                        for (var i = 0; i < vals.length; i++) {
+                            if (enums[filed.enumName]) {
+                                texts.push(enums.getText(filed.enumName, vals[i]));
+                            } else {
+                                texts.push(this.findSelectText(vals[i]))
+                            }
+                        }
+                        _text = texts.join('  ')
+                        break;
+
                     default :
                         _text = val;
                         _title = val;
@@ -1223,6 +1258,18 @@
 
         resetCheck: function () {
             $('.select-data, #select-all').prop('checked', false);
+        },
+
+        findSelectText: function (val) {
+            var _text;
+            $.each(this.config.commonSelectMap, function (i, n) {
+                $.each(n,function (j,index) {
+                    if (index.value == val) {
+                        _text = index.name;
+                    }
+                });
+            });
+            return _text;
         }
     };
 

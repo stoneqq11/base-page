@@ -280,3 +280,37 @@ input[type=checkbox] {
 .table .btn-wrap {
     text-align: center;
 }
+
+
+/*************checkbox***************/
+.checkbox-wrap {
+    margin-right: 8px;
+    padding: 5px;
+    border: dashed 1px #ddd;
+}
+.checkbox-wrap>div {
+    display: inline-block;
+    width: 50%;
+}
+.checkbox-wrap>.sel-all {
+    width: 100%;
+    margin-bottom: 8px;
+    text-align: center;
+    border-bottom: dashed 1px #ddd;
+}
+.checkbox-wrap>.sel-all input,
+.checkbox-wrap>.sel-all label {
+    width: auto;
+}
+.checkbox-wrap input {
+    width: 10%;
+}
+.checkbox-wrap label {
+    width: 80%;
+    margin: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    cursor: pointer;
+}
+

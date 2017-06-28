@@ -9,6 +9,7 @@
 		"rule": "rule1",
 		"startTime": 1497929940058,
 		"endTime": 1497929940058,
-		"status": 0
+		"status": 0,
+		"contents": [1, 16]
 	}
 }

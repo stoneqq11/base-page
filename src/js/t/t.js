@@ -59,6 +59,16 @@ var config = {
             enumName:'AWARD_STATUS',
             actions: ['list','info', 'search'],
             type:'select'
+        },
+        {
+            name: 'contents',
+            text: '内容',
+            type: 'checkbox',
+            enumName: '/manage/homepage/list',
+            enumId: 'id',
+            enumText: 'title',
+            actions: ['batchAdd1', 'upd', 'info'],
+            selAll: true
         }],
     actions: [
         {action: 'search', text: '查询', url: '/manage/homepage/list'},
