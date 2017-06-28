@@ -99,6 +99,7 @@ var config = {
             callbackFn: function ($btn, formValues) {
                 console.log($btn);
                 console.log(formValues)
+                
             }
         },
         {
@@ -111,6 +112,19 @@ var config = {
                 pageUrl: '/index.html?page=t-t&pageNumber=100',
                 dataUrl: '/manage/homepage/list',
                 parentId: 'parentId'
+            },
+            callbackFn: function ($btn, selectData) {
+                console.log($btn.data());
+                console.log(selectData)
+            }
+        },
+        {
+            action: 'select1',
+            text: '选择',
+            clz: 'info',
+            url: '/manage/homepage/select',
+            selectChild: {
+                pageUrl: '/index.html?page=t-t&pageNumber=100'
             },
             callbackFn: function ($btn, selectData) {
                 console.log($btn);

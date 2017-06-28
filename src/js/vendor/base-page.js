@@ -997,7 +997,7 @@
          */
         optCustom: function (action, $o) {
             var isBatch = !action.single && action.isBatch;
-            var isSelect = action.single && action.selectChild.pageUrl;
+            var isSelect = action.selectChild.pageUrl;
             var selectData = getSelectData();
             var _html = this.getOptHtml(action.action);
             var _this = this;
@@ -1070,7 +1070,7 @@
                 select = window.parent && window.parent.selectChildData,
                 isSelect = CU.getUrlParam('isSelect');
 
-            if (isSelect && select) {
+            if (isSelect && select && select.dataUrl) {
                 $.get(select.dataUrl + (select.dataUrl.indexOf('?') >= 0 ? '&' : '?') 
                     + select.parentId + '=' + select.id, function (result) {
                         _this.selectInitData = result.value.data;
