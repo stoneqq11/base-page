@@ -57,7 +57,7 @@ var config = {
             text: '状态',
             checkType: 'required',
             enumName:'AWARD_STATUS',
-            actions: ['list','info', 'search'],
+            actions: ['list','info', 'search', 'add'],
             type:'select'
         },
         {
@@ -99,7 +99,7 @@ var config = {
             callbackFn: function ($btn, formValues) {
                 console.log($btn);
                 console.log(formValues)
-                
+
             }
         },
         {
@@ -107,7 +107,6 @@ var config = {
             text: '选择子项目',
             single: true,
             clz: 'info',
-            url: '/manage/homepage/select',
             selectChild: {
                 pageUrl: '/index.html?page=t-t&pageNumber=100',
                 dataUrl: '/manage/homepage/list',
@@ -125,10 +124,6 @@ var config = {
             url: '/manage/homepage/select',
             selectChild: {
                 pageUrl: '/index.html?page=t-t&pageNumber=100'
-            },
-            callbackFn: function ($btn, selectData) {
-                console.log($btn);
-                console.log(selectData)
             }
         }
     ],

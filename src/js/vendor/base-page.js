@@ -203,11 +203,11 @@
             if (this.config.addUrlParam) {
                 $.each(this.config.actions, function () {
                     var search = /\?/.test(this.url) ? location.search.replace(/\?/, '&') : location.search;
-                    this.url += search;
+                    this.url && (this.url += search);
                 });
             }
 
-            // 安装规定过滤掉不符的配置，获取字段类型，按需加载插件资源
+            // 过滤掉不符的配置，获取字段类型，按需加载插件资源
             plugins = this.ruleValid();
 
             // 按需加载页面插件资源
@@ -353,7 +353,6 @@
 
                 if ($.inArray(item.type, ['date', 'time', 'datetime']) != -1) {
                     var search = getSearchTime(item);
-                    // $temp.append(MU.tpl(id, search.start));
                     fileds.push($(MU.tpl('filed-search-tpl', search.start)).append(MU.tpl(id, search.start))[0].outerHTML);
                     fileds.push($(MU.tpl('filed-search-tpl', search.end)).append(MU.tpl(id, search.end))[0].outerHTML);
                 } else {
@@ -441,7 +440,7 @@
          * @returns {CommonPage}
          */
         completeTemplate: function () {
-
+            // todo
             return this;
         },
 
@@ -456,11 +455,11 @@
                 _this = this,
                 fileds = $.extend(true, [], this.config.fileds);
 
-            action = action || 'add'; data = data || {};
+            action = action || 'add';
+            data = data || {};
 
             $.each(fileds, function (idx, item) {
-                if ( item.actions && item.actions.length && $.inArray(action, item.actions) == -1
-                    || (item.actions && item.actions.length === 0)) return;
+                if ( $.inArray(action, item.actions || []) == -1 ) return;
 
                 if (action == 'add') {
                     $.each(data, function (i, n) {
@@ -480,6 +479,7 @@
                 var messages = item.checkMessage || {},
                     id = constants.FILED_DEFAULT_MAP[item.type].tpl,
                     $tpl = $(MU.tpl('filed-edit-tpl', item));
+
                 if ( $.inArray(item.type, ['date', 'time']) != -1 ) {
                     item.dataType = item.type;
                     item.value = _this.formatColumn(item.value, item, 'upd');
@@ -487,7 +487,6 @@
                 if ( item.type == 'checkbox' ) {
                     item.value = (item.value || []).join(CONSTANTS.CHECKBOX_SPLIT);
                 }
-
                 item.type = constants.FILED_DEFAULT_MAP[item.type].type || item.type;
 
                 if ( action == 'info' ) {
@@ -501,7 +500,6 @@
                         .attr(messages);
                     item.attrs && $inp.attr(item.attrs);
                 }
-
                 htm.push($tpl[0].outerHTML);
             });
 
@@ -530,19 +528,21 @@
                 fileds = $.extend(true, [], this.config.fileds);
 
             $.each(fileds, function (idx, item) {
-                if ( item.actions && item.actions.length && $.inArray(action, item.actions) == -1
-                    || (item.actions && item.actions.length === 0)) return;
+                if ( $.inArray(action, item.actions) == -1 ) return;
 
                 item.type == 'select' && ( item.selAll = false );
 
                 var messages = item.checkMessage || {},
                     id = constants.FILED_DEFAULT_MAP[item.type].tpl,
                     $tpl = $(MU.tpl('filed-edit-tpl', item));
+
                 if ( $.inArray(item.type, ['date', 'time']) != -1 ) {
                     item.dataType = item.type;
                     item.value = _this.formatColumn(item.value, item, 'upd');
                 }
-
+                if ( item.type == 'checkbox' ) {
+                    item.value = (item.value || []).join(CONSTANTS.CHECKBOX_SPLIT);
+                }
                 item.type = constants.FILED_DEFAULT_MAP[item.type].type || item.type;
 
                 var $inp = $tpl
@@ -1019,34 +1019,67 @@
                 })
             } else {
                 if (isSelect) {
-                    $('#common-modal').modal('show').find('.modal-dialog').addClass('large');
-                    $('#common-body').html(MU.tpl('select-page-tpl', {src: isSelect}));
-                    window.selectChildData = $.extend(true, {id: $o.data(this.idFiled)}, action.selectChild);
-                    $('#select-frame').load(function () {
-                        $('.manage-nav,.manage-location,.manage-bottom', window.frames['selectFrame'].document).hide();
-                        action.initFn && action.initFn($o);
-                    });
-                    $('.ac-sure').off('click').click(function () {
-                        var selected = getSelectData($('#data-table', 
-                            window.frames['selectFrame'].document).find('.select-data:checked'));
-                        if (!selected.length) {
-                            MU.alert('请选择数据');
-                            return;
-                        } else {
-                            action.callbackFn && action.callbackFn($o, selected);
-                            $('#common-modal').modal('hide').find('.modal-dialog').removeClass('large');
-                        }
-                    });
-                    $('#common-modal').on('hide.bs.modal', function () {
-                        setTimeout(function () {
-                            $('#common-modal').find('.modal-dialog').removeClass('large');
-                        }, 100);
-                    });
+                    this.optSelect(action, $o);
                 } else {
                     action.initFn && action.initFn(isBatch ? selectData : $o);
                     action.resetCheck && _this.resetCheck();
                 }
             }
+        },
+
+        /**
+         * 选择操作
+         * @param action {!object} action定义
+         * @param $o {!jquery object} 点击对象
+         */
+        optSelect: function (action, $o) {
+            var _this = this;
+
+            $('#common-label').text(action.text);
+            $('#common-modal')
+                .modal('show').find('.modal-dialog').addClass('large');
+            $('#common-body')
+                .html(MU.tpl('select-page-tpl', {src: action.selectChild.pageUrl}));
+
+            // 子页面中用来初始化选中
+            window.selectChildData = $.extend(true, {id: $o.data(this.idFiled)}, action.selectChild);
+
+            $('#select-frame').load(function () {
+                $('.manage-nav,.manage-location,.manage-bottom', window.frames['selectFrame'].document).hide();
+                action.initFn && action.initFn($o);
+            });
+
+            $('.ac-sure').off('click').click(function () {
+                var selected = getSelectData($('#data-table', 
+                    window.frames['selectFrame'].document).find('.select-data:checked'));
+                if (!selected.length) {
+                    MU.alert('请选择数据');
+                    return;
+                } else {
+                    if (action.url) {
+                        $.post(action.url, {jsonParams: JSON.stringify({
+                            currentData: $o.data(),
+                            selectData: selected
+                        })}, function(result){
+                            if (result.code == 200) {
+                                MU.alert(action.text + '成功');
+                                $('#common-modal').modal('hide').find('.modal-dialog').removeClass('large');
+                                _this.optSearch(true);
+                            } else {
+                                MU.alert(action.text + '失败：\n' + result.message);
+                            }
+                        })
+                    } else {
+                        action.callbackFn && action.callbackFn($o, selected);
+                        $('#common-modal').modal('hide').find('.modal-dialog').removeClass('large');
+                    }
+                }
+            });
+            $('#common-modal').on('hide.bs.modal', function () {
+                setTimeout(function () {
+                    $('#common-modal').find('.modal-dialog').removeClass('large');
+                }, 100);
+            });
         },
 
         /**
@@ -1163,7 +1196,8 @@
             });
 
             //当前页无数据，则跳转至上一页
-            if (bd.value.data.length == 0 && $('#data-table_previous').hasClass('previous')) {
+            if ((bd.value && bd.value.data || []).length == 0 
+                && $('#data-table_previous').hasClass('previous')) {
                $('#data-table_previous').trigger('click');
             }
 
