@@ -841,7 +841,7 @@ Date.prototype.format = function (format) {
 
 $(function () {
     var page = CU.getUrlParam('page');
-    page && $.getScript('../js/' + page.replace(/-/g, '/') + '.js');
+    page && $.getScript('./js/' + page.replace(/-/g, '/') + '.js');
 
     // 回车搜索
     $('form[role="search"]').on('keydown', ':text', function(evt){

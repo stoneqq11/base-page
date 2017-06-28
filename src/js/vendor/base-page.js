@@ -38,23 +38,23 @@
         // 不同字段类型对应的插件资源
         SOURCE_MAP: {
             date: [
-                '../css/vendor/jquery-ui.css',
-                '../js/plugins/jquery-ui-datepicker.js'
+                './css/vendor/jquery-ui.css',
+                './js/plugins/jquery-ui-datepicker.js'
             ],
             time: [
-                '../css/vendor/jquery-ui.css',
-                '../js/plugins/jquery-ui.js',
-                '../js/plugins/jquery-ui-timepicker-addon.js'
+                './css/vendor/jquery-ui.css',
+                './js/plugins/jquery-ui.js',
+                './js/plugins/jquery-ui-timepicker-addon.js'
             ],
             img: [
-                '../plugins/uploadify/uploadify.css',
-                '../plugins/uploadify/html5uploader.css',
-                '../plugins/uploadify/jquery-uploadify.min.js',
-                '../plugins/uploadify/jquery.html5uploader.js'
+                './plugins/uploadify/uploadify.css',
+                './plugins/uploadify/html5uploader.css',
+                './plugins/uploadify/jquery-uploadify.min.js',
+                './plugins/uploadify/jquery.html5uploader.js'
             ],
             color: [
-                '../css/vendor/color-picker.css',
-                '../js/plugins/color-picker.js'
+                './css/vendor/color-picker.css',
+                './js/plugins/color-picker.js'
             ]
         },
 
@@ -997,7 +997,7 @@
          */
         optCustom: function (action, $o) {
             var isBatch = !action.single && action.isBatch;
-            var isSelect = action.selectChild.pageUrl;
+            var isSelect = action.selectChild && action.selectChild.pageUrl;
             var selectData = getSelectData();
             var _html = this.getOptHtml(action.action);
             var _this = this;
