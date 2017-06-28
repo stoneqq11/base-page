@@ -1062,9 +1062,10 @@
                             selectData: selected
                         })}, function(result){
                             if (result.code == 200) {
-                                MU.alert(action.text + '成功');
-                                $('#common-modal').modal('hide').find('.modal-dialog').removeClass('large');
-                                _this.optSearch(true);
+                                MU.alert(action.text + '成功', false, function () {
+                                    $('#common-modal').modal('hide').find('.modal-dialog').removeClass('large');
+                                    _this.optSearch(true);
+                                });
                             } else {
                                 MU.alert(action.text + '失败：\n' + result.message);
                             }

@@ -107,6 +107,7 @@ var config = {
             text: '选择子项目',
             single: true,
             clz: 'info',
+            relativeFileds: ['id', 'sort'],
             selectChild: {
                 pageUrl: '/index.html?page=t-t&pageNumber=100',
                 dataUrl: '/manage/homepage/list',
