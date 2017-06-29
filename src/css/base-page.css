@@ -165,7 +165,7 @@ a:link, a:visited {
 }
 
 .browse-file {
-    background: url('../img/quick-icon.jpg') no-repeat scroll 0 0 rgba(0, 0, 0, 0);
+    background: url('../image/quick-icon.jpg') no-repeat scroll 0 0 rgba(0, 0, 0, 0);
     height: 86px;
     width: 86px;
 }
@@ -354,10 +354,19 @@ input[type=checkbox] {
 
 .btn-primary {
     background-color: #3f3f3f;
-    border-color: #aaa;
+    border-color: #3f3f3f;
+}
+.btn-info {
+    background-color: #428bca;
+    border-color: #428bca;
+}
+.btn-info:hover {
+    background-color: #045e79;
+    border-color: #045e79;
 }
 .btn-primary:hover {
     background-color: #000;
+    border-color: #000;
 }
 
 .input-group-addon {
@@ -368,4 +377,16 @@ input[type=checkbox] {
 
 label[for='select-all'] {
     margin: 0 2px 0 0;
+}
+
+.pagination>li>a,
+.pagination>li>a:hover,
+.pagination>li>span,
+.pagination>li>span:hover {
+    color: #900b09;
+}
+
+.pagination>input,
+.pagination>span {
+    color: #000;
 }

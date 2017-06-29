@@ -344,9 +344,8 @@
             var fileds = [];
 
             $.each(this.config.fileds, function (idx, item) {
-                if (item.actions && item.actions.length
-                        && $.inArray('search', item.actions) == -1
-                    || (item.actions && item.actions.length === 0)) return;
+                if ($.inArray('search', item.actions || []) == -1 
+                    && $.inArray(item.type, ['select', 'checkbox']) == -1) return;
 
                 var id = constants.FILED_DEFAULT_MAP[item.type].tpl,
                     $temp = $(MU.tpl('filed-search-tpl', item));
@@ -356,6 +355,11 @@
                     fileds.push($(MU.tpl('filed-search-tpl', search.start)).append(MU.tpl(id, search.start))[0].outerHTML);
                     fileds.push($(MU.tpl('filed-search-tpl', search.end)).append(MU.tpl(id, search.end))[0].outerHTML);
                 } else {
+                    // seletc/checkbox 需要初始化枚举值
+                    if ($.inArray('search', item.actions || []) == -1) {
+                        $temp.css('display', 'none');
+                    }
+
                     item.type = constants.FILED_DEFAULT_MAP[item.type].type || item.type;
                     $temp.append(MU.tpl(id, item)).find('.dropdown-toggle').removeClass('form-control');
                     fileds.push($temp[0].outerHTML);
@@ -393,8 +397,7 @@
             var fileds = [], conf = this.config;
 
             $.each(conf.fileds, function (idx, item) {
-                if (item.actions && item.actions.length && $.inArray('list', item.actions) == -1
-                    || (item.actions && item.actions.length === 0)) return;
+                if ($.inArray('list', item.actions || []) == -1) return;
 
                 fileds.push({
                     title: item.text,
@@ -674,6 +677,7 @@
                             id: enumId,
                             name: enumText,
                             selMap: self.config.commonSelectMap,
+                            filedName: filed.name,
                             onSelect: filed.onSelect
                         },
                         $parent = $('[name="' + parent + '"]', container);
@@ -704,7 +708,8 @@
                         url: enumName,
                         id: enumId,
                         name: enumText,
-                        onSelect: filed.onSelect
+                        onSelect: filed.onSelect,
+                        filedName: filed.name
                     },
                     $parent = $('[name="' + parent + '"]', container);
 
@@ -1013,9 +1018,27 @@
                 $('.ac-sure').off('click').click(function () {
                     if (!$('#common-edit-form').valid(this, '请按照规则填写表单信息.')) 
                         return false;
-                    action.callbackFn && action.callbackFn($o, $('#common-edit-form').serializeArray());
-                    _this.closeModal();
-                    action.resetCheck && _this.resetCheck();
+
+                    if (action.url) {
+                        var data = $o.data(),
+                            formValues = $('#common-edit-form').serializeArray();
+                        for (var k in data) {
+                            formValues.push({name: k, value: data[k]})
+                        }
+                        $.post(action.url, formValues, function (result) {
+                            if (result.code == 200) {
+                                MU.alert(action.text + '成功', false, function () {
+                                    _this.closeModal();
+                                    _this.optSearch(true);
+                                });
+                            } else {
+                                MU.alert(action.text + '失败：\n' + result.message);
+                            }
+                        });
+                    } else {
+                        action.callbackFn && action.callbackFn($o, $('#common-edit-form').serializeArray());
+                        action.resetCheck && _this.resetCheck();
+                    }
                 })
             } else {
                 if (isSelect) {
@@ -1319,7 +1342,7 @@
             $.each(this.config.commonSelectMap, function (i, n) {
                 $.each(n,function (j,index) {
                     if (index.value == val) {
-                        _text = index.name;
+                        _text = index.text;
                     }
                 });
             });

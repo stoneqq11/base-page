@@ -29,7 +29,7 @@ var config = {
             text: '主题名称',
             type: 'text',
             checkType: 'required',
-            actions: ['upd', 'add','list','info', 'batchAdd1']
+            actions: ['upd', 'add','list','info', 'batchAdd1', 'cust']
         },
         {
             name: 'rules',
@@ -43,7 +43,7 @@ var config = {
             text: '开始时间',
             checkType: 'required',
             type: 'date',
-            actions: ['upd', 'add','list','info', 'search']
+            actions: ['upd', 'add','list','info', 'search', 'cust']
         },
         {
             name: 'endTime',
@@ -63,11 +63,11 @@ var config = {
         {
             name: 'contents',
             text: '内容',
-            type: 'checkbox',
+            type: 'select',
             enumName: '/manage/homepage/list',
             enumId: 'id',
             enumText: 'title',
-            actions: ['batchAdd1', 'upd', 'info'],
+            actions: ['batchAdd1', /*'search', */'list', 'add', 'upd', 'info'],
             selAll: true
         }],
     actions: [
@@ -76,6 +76,12 @@ var config = {
         {action: 'upd', text: '修改', url: '/manage/homepage/upd'},
         {action: 'add', text: '添加', url: '/manage/homepage/add'},
         {action: 'del', text: '删除', url: '/manage/homepage/del'},
+        {
+            action: 'cust', 
+            text: '其他', 
+            url: '/manage/homepage/list', 
+            clz: 'info'
+        },
         {
             action: 'batchAdd', 
             text: '批量操作', 

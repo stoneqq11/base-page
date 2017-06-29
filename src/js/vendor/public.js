@@ -663,7 +663,7 @@ var manageUtil = {
                     conf.id && (this.value = this[conf.id]);
                     conf.name && (this.text = this[conf.name]);
                 });
-                conf.selMap && (conf.selMap[$sel.attr('data-enum-id')] = $.extend(true, {}, bd.value));
+                conf.selMap && (conf.selMap[conf.filedName] = $.extend(true, {}, bd.value));
                 manageUtil.initSelect($sel, bd.value, selected, conf.container, conf.onSelect);
             }
         });
@@ -684,6 +684,7 @@ var manageUtil = {
                 param: $.extend(param, conf.paramFn && conf.paramFn() || {}),
                 id: conf.id,
                 name: conf.name,
+                filedName: conf.filedName,
                 container: conf.container,
                 onSelect: conf.onSelect
             }, null);
