@@ -632,6 +632,14 @@ var manageUtil = {
     initEnumSelect: function($sel, selected, onSelect){
         var _enums = enums[$sel.attr('data-enum')];
 
+        if (!_.isArray(_enums)) {
+            var _values = [];
+            for (var k in _enums) {
+                _values = _values.concat(_enums[k]);
+            }
+            _enums = _values;
+        }
+
         if ( !_enums ) {
             console.error('未找到枚举：' + $sel.attr('data-enum'));
             return;
@@ -677,17 +685,22 @@ var manageUtil = {
      */
     initParentSelect: function ($sel, $parent, conf) {
         $parent.off('value-change').on('value-change', function () {
-            var param = {};
-            param[$parent.attr('name')] = $parent.val();
-            manageUtil.initAjaxSelect($sel, {
-                url: conf.url,
-                param: $.extend(param, conf.paramFn && conf.paramFn() || {}),
-                id: conf.id,
-                name: conf.name,
-                filedName: conf.filedName,
-                container: conf.container,
-                onSelect: conf.onSelect
-            }, null);
+            if (enums[conf.enumName]) {
+                manageUtil.initSelect($sel, 
+                    enums[conf.enumName][$parent.val()] || [], null, null, conf.onSelect);
+            } else {
+                var param = {};
+                param[$parent.attr('name')] = $parent.val();
+                manageUtil.initAjaxSelect($sel, {
+                    url: conf.enumName,
+                    param: $.extend(param, conf.paramFn && conf.paramFn() || {}),
+                    id: conf.id,
+                    name: conf.name,
+                    filedName: conf.filedName,
+                    container: conf.container,
+                    onSelect: conf.onSelect
+                }, null);
+            }
         });
     },
 

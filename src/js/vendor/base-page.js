@@ -89,7 +89,7 @@
             //              fn:fnName 自定义验证函数名 【fn:manage.validName】
             //      】
             //      checkMessage {?object} 验证提示 {required-message: '', url-message: ''}
-            //      actions {?array} 默认全部操作，该字段在哪些操作中显示，可选值：【add||upd||list||search||info】
+            //      actions {?array} 该字段在哪些操作中显示，对应actions配置中的action值
             //      attrs {} 字段需要额外添加的属性，命名自定
             //      enumName {?string} select类型必填，对应枚举
             //      enumId {?string} select类型，对应value值
@@ -525,7 +525,7 @@
          * @param action {!string} 操作类型
          * @returns {string} 对应弹框页面的html
          */
-        getOptHtml: function (action) {
+        getOptHtml: function (action, data) {
             var htm = [],
                 _this = this,
                 fileds = $.extend(true, [], this.config.fileds);
@@ -668,29 +668,21 @@
                     return filed.name == $inp.attr('name');
                 });
 
-                if (enums[enumName]) {
-                    manageUtil.initEnumSelect($sel, selected, filed.onSelect);
-                } else if (/\//.test(enumName)) {
-                    var parent = $sel.attr('data-enum-parent'),
-                        enumConfig = {
+                // if(!$sel.attr('data-enum-parent')){
+                    if (enums[enumName]) {
+                        manageUtil.initEnumSelect($sel, selected, filed.onSelect);
+                    } else if (/\//.test(enumName)) {
+                        var enumConfig = {
                             url: enumName,
                             id: enumId,
                             name: enumText,
                             selMap: self.config.commonSelectMap,
                             filedName: filed.name,
                             onSelect: filed.onSelect
-                        },
-                        $parent = $('[name="' + parent + '"]', container);
-
-                    if (parent) {
-                        enumConfig.container = container;
-                        enumConfig.param = {};
-                        enumConfig.param[$parent.attr('name')] = $parent.val();
-                    }
-                    if(!$sel.attr('data-enum-parent')){
+                        }
                         manageUtil.initAjaxSelect($sel, enumConfig, selected);
                     }
-                }
+                // }
             });
             $('ul.dropdown-menu[data-enum-parent]', container).each(function () {
                 var $sel = $(this),
@@ -705,7 +697,7 @@
 
                 var parent = $sel.attr('data-enum-parent'),
                     enumConfig = {
-                        url: enumName,
+                        enumName: enumName,
                         id: enumId,
                         name: enumText,
                         onSelect: filed.onSelect,
@@ -714,9 +706,7 @@
                     $parent = $('[name="' + parent + '"]', container);
 
                 enumConfig.container = container;
-                if (parent) {
-                    manageUtil.initParentSelect($sel, $parent, enumConfig);
-                }
+                manageUtil.initParentSelect($sel, $parent, enumConfig);
             });
 
             //color
@@ -808,9 +798,7 @@
             $form.find('table.modify-table').append(_this.getEditHtml('add', valueInfo));
             $('#common-body').html($form[0].outerHTML);
             this.initPlugins($('#common-modal'), true);
-
             add.initFn && add.initFn(valueInfo);
-
             $('#common-edit-form').validation();
             _this.optEdit(add, _this);
         },

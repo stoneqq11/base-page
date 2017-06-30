@@ -11,11 +11,21 @@ var enums = {
         if (!array) {
             console.error("名称为[" + arrayName + "]的数组不存在于枚举中");
         } else {
-            $.each(array, function (i, n) {
-                if (n.value == value) {
-                    text = n.text;
-                }
-            });
+            if (_.isArray(array)) {
+                $.each(array, function (i, n) {
+                    if (n.value == value) {
+                        text = n.text;
+                    }
+                }); 
+            } else {
+                for (var k in array) {
+                    $.each(array[k], function (i, n) {
+                        if (n.value == value) {
+                            text = n.text;
+                        }
+                    });
+                }   
+            }
         }
         return text;
     },
@@ -23,5 +33,16 @@ var enums = {
     AWARD_STATUS: [
         {value: 0, text: '使用中'},
         {value: 1, text: '禁用'}
-    ]
+    ],
+
+    AWARD_STATUS_CHILD: {
+        0: [
+            {value: 10, text: '使用中1'},
+            {value: 11, text: '禁用1'}
+        ],
+        1: [
+            {value: 110, text: '使用中11'},
+            {value: 111, text: '禁用11'}
+        ]
+    },
 };

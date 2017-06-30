@@ -57,8 +57,17 @@ var config = {
             text: '状态',
             checkType: 'required',
             enumName:'AWARD_STATUS',
-            actions: ['list','info', 'search', 'add'],
+            actions: ['list','info', 'search', 'add', 'upd'],
             type:'select'
+        },
+        {
+            name: 'status2',
+            text: '子状态',
+            checkType: 'required',
+            enumName:'AWARD_STATUS_CHILD',
+            actions: ['list','info', 'search', 'add', 'upd'],
+            type:'select',
+            enumParent: 'status'
         },
         {
             name: 'contents',
@@ -68,7 +77,8 @@ var config = {
             enumId: 'id',
             enumText: 'title',
             actions: ['batchAdd1', /*'search', */'list', 'add', 'upd', 'info'],
-            selAll: true
+            selAll: true,
+            isAddInfo: true
         }],
     actions: [
         {action: 'search', text: '查询', url: '/manage/homepage/list'},
