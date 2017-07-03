@@ -13,7 +13,6 @@
         FILED_DEFAULT_MAP: {
             text: {tpl: 'input-tpl', columnClz: 'align-left'},
             select: {tpl: 'select-tpl', columnClz: 'align-center'},
-            radio: {tpl: 'input-tpl', columnClz: 'align-center'},
             checkbox: {tpl: 'checkbox-tpl'},
             date: {tpl: 'date-tpl', columnClz: 'align-center', type: 'text'},
             time: {tpl: 'date-tpl', columnClz: 'align-center', type: 'text'},
@@ -74,7 +73,7 @@
             //      name {!string} 字段名称，要求与接口传递字段保持一致
             //      text {!string} 字段中文名称
             //      type {?string} 字段类型，默认值text，
-            //            可选值【text||hidden||textarea||select||img||color||radio||checkbox||date||time||number】
+            //            可选值【text||hidden||textarea||select||img||color||checkbox||date||time||number】
             //      isId: {?boolean} 是否主键字段
             //      value {?*} 初始值
             //      width {?string} 列宽【10%||100px】
@@ -98,7 +97,7 @@
             //      enumAttr {?string} 附加给下拉框选项的值，多个以逗号分隔，以data-name形式存在
             //      onSelect {?function} 选择选项后回调，参数为选择项jquery object
             //      selectAll {?boolean} select是否有全部选择项,默认true
-            //      isAddInfo {?boolean} 新增是否初始化,默认false,【只实用select类型】
+            //      initFromSearch {?boolean} 对于下拉框，新增是否初始化为当前查询条件的值
             // }, {}]
             fileds: [],
 
@@ -108,9 +107,9 @@
             //          系统提供操作【add--新增||upd--修改||del--删除||search--查询||info--详情||copy--复制】
             //      text {?string|function} 自定义方法必填，操作中文名称，为function时，参数是该行的数据
             //      url {!url} 接口调用url
+            //      initFn {?function} 初始化操作，参数为 fileds_relative obj
             //      beforeSubmit {?function} 提交前回调
             //      callbackFn {?function} 完成操作后的回掉，参数为后台接口返回的result
-            //      initFn {?function} 初始化操作，参数为 fileds_relative obj
             //      single {?boolean} 是否针对每条数据的操作，默认false将按钮放置search模块，默认操作忽略该属性
             //      relativeFileds {?array} 进行操作需要用到的关联字段值，以[data-]filed_name形式存储在操作按钮上
             //      isHide {?boolean} 是否隐藏该操作
@@ -175,7 +174,7 @@
         // 对应数据库id字段，默认设为'id'
         this.idFiled = 'id';
 
-        // 从页面配置中提取常用的url，主要包括新增和查询
+        // 从页面配置中提取常用的url
         this.urls = {};
 
         this.tableConfig = {};
@@ -218,7 +217,7 @@
             // 填充页面
             this.completePage();
 
-            commonUtil.getResources(urls, function () {
+            CU.getResources(urls, function () {
                 _this.initPlugins($('#search-form'));
                 _this.bindEvents();
                 _.isFunction(_this.config.onPageFinished) && _this.config.onPageFinished();
@@ -230,61 +229,28 @@
 
         /**
          * 规则验证，过滤掉不符合规范的定义
+         * @returns [types] 当前页面的字段类型集合，用于加载初始化插件
          */
         ruleValid: function () {
             var _this = this, typs = [];
 
-            //fileds
+            // fileds
             $.each(this.config.fileds, function (idx, item) {
-                item.type = item.type || 'text';
-                item.holder = item.text;
-
-                var id = constants.FILED_DEFAULT_MAP[item.type].tpl;
-                if ( !id ) {
-                    item.valid = false;
-                    console.error(constants.LOGGER_LOGO + '无效的字段类型：' + item.type);
-                    return;
-                }
-
-                if ( item.type == 'select' && !item.enumName ) {
-                    item.valid = false;
-                    console.error(constants.LOGGER_LOGO + '下拉框[' + item.name + ']未指定enum属性值');
-                    return;
-                }
-
-                typs.push(item.type);
-
-                //找到id字段名称，找不到默认为'id'
-                item.isId === true && (_this.idFiled = item.name);
+                _this.filedValid(item, typs);
             });
-
             this.config.fileds = _.filter(this.config.fileds, function(filed){
                 return filed.valid !== false;
             });
 
-            //actions
+            // actions
             $.each(this.config.actions, function(idx, item){
-                item.text = item.text || constants.OPT_MAP[item.action].text || '';
-                constants.OPT_MAP[item.action] && (item.single = constants.OPT_MAP[item.action].single);
-
-                if ( !item.text ) {
-                    item.valid = false;
-                    console.log(constants.LOGGER_LOGO + '操作[' + item.action + ']缺少text属性，被过滤');
-                    return;
-                }
-
-                if (item.selectChild && item.selectChild.pageUrl) {
-                    item.selectChild.pageUrl += '&isOperate=false&isBatch=true&isSelect=true'
-                }
-
-                if (!item.clz && constants.OPT_MAP[item.action]) {
-                    item.clz = constants.OPT_MAP[item.action].clz || ''
-                }
-                item.action == "search" && (_this.urls.search = item.url);
-                item.action == "count" && (_this.urls.count = item.url);
-                item.action == "add" && (_this.urls.add = item.url);
+                _this.actionValid(item);
+            });
+            this.config.actions = _.filter(this.config.actions, function(action){
+                return action.valid !== false;
             });
 
+            // add copy action
             if (this.config.isCopy && this.urls.add) {
                 this.config.actions.push({
                     action: 'copy',
@@ -295,14 +261,68 @@
                 });
             }
 
-            this.config.actions = _.filter(this.config.actions, function(action){
-                return action.valid !== false;
-            });
-
-            this.config.editFormColumns = Math.max(Math.min(this.config.editFormColumns, 2), 1);
-            this.config.editFormColumns == 2 && $('.modal-dialog').width('1000px');
+            // 编辑界面字段列数
+            this.config.editFormColumns = 
+                Math.max(Math.min(this.config.editFormColumns, 2), 1);
+            if (this.config.editFormColumns == 2) {
+                $('.modal-dialog').width('1000px');
+            }
 
             return _.uniq(typs);
+        },
+
+        /**
+        * field配置验证，需要指定type，默认为text
+        * 支持的类型：【text||hidden||textarea||select||img||color||checkbox||date||time||number】
+        * select类型需要配置enumName
+        */
+        filedValid: function (item, typs) {
+            item.type = item.type || 'text';
+            item.holder = item.text;
+
+            var id = constants.FILED_DEFAULT_MAP[item.type].tpl;
+            if ( !id ) {
+                item.valid = false;
+                console.error(constants.LOGGER_LOGO + '无效的字段类型：' + item.type);
+                return;
+            }
+            if ( item.type == 'select' && !item.enumName ) {
+                item.valid = false;
+                console.error(constants.LOGGER_LOGO + '下拉框[' + item.name + ']未指定enum属性值');
+                return;
+            }
+            typs.push(item.type);
+
+            //找到id字段名称，找不到默认为'id'
+            item.isId === true && (this.idFiled = item.name);
+        },
+
+        /**
+        * action配置验证，需要指定action和text
+        * 指定默认的显示clz
+        */
+        actionValid: function (item) {
+            item.text = item.text || constants.OPT_MAP[item.action].text || '';
+            constants.OPT_MAP[item.action] && (item.single = constants.OPT_MAP[item.action].single);
+
+            if (!item.text || !item.action) {
+                item.valid = false;
+                console.warn(constants.LOGGER_LOGO + '操作[' + item.action + ']缺少text|action属性，被过滤');
+                return;
+            }
+
+            if (item.selectChild && item.selectChild.pageUrl) {
+                item.selectChild.pageUrl += '&isOperate=false&isBatch=true&isSelect=true'
+            }
+
+            if (!item.clz && constants.OPT_MAP[item.action]) {
+                item.clz = constants.OPT_MAP[item.action].clz || ''
+            }
+
+            item.action == "search" && (this.urls.search = item.url);
+            item.action == "count" && (this.urls.count = item.url);
+            item.action == "add" && (this.urls.add = item.url);
+            item.action == "info" && (this.urls.info = item.url);
         },
 
         /**
@@ -337,15 +357,15 @@
         },
 
         /**
-         * 填充查询条件
+         * 填充查询条件，过滤掉[img/textarea/color]
          * @returns {CommonPage}
          */
         completeSearch: function () {
             var fileds = [];
-
             $.each(this.config.fileds, function (idx, item) {
                 if ($.inArray('search', item.actions || []) == -1 
-                    && $.inArray(item.type, ['select', 'checkbox']) == -1) return;
+                    && $.inArray(item.type, ['select', 'checkbox']) == -1
+                    || $.inArray(item.type, ['img', 'textarea', 'color']) != -1) return;
 
                 var id = constants.FILED_DEFAULT_MAP[item.type].tpl,
                     $temp = $(MU.tpl('filed-search-tpl', item));
@@ -377,8 +397,11 @@
          */
         completeOptBtn: function () {
             var btns = [];
-            var isSelect = CU.getUrlParam('isSelect') === 'true'
+            var isSelect = CU.getUrlParam('isSelect') === 'true';
+
             $.each(this.config.actions, function(idx, item){
+                // 过滤掉单行操作
+                // 当前页面在被选择时，只显示查询操作
                 if ( item.single || (isSelect && item.action != 'search') ) return;
 
                 btns.push(MU.tpl('btn-tpl', item));
@@ -394,7 +417,9 @@
          * @returns {CommonPage}
          */
         completeTable: function () {
-            var fileds = [], conf = this.config;
+
+            var fileds = [],
+                conf = this.config;
 
             $.each(conf.fileds, function (idx, item) {
                 if ($.inArray('list', item.actions || []) == -1) return;
@@ -406,6 +431,7 @@
                 });
             });
 
+            // 是否显示操作栏
             if (conf.isOperate) {
                 fileds.push({
                     title: '操作',
@@ -415,6 +441,7 @@
                 });
             }
 
+            // 是否显示选择栏
             if (conf.isBatch) {
                 fileds.unshift({
                     title: '<label for="select-all">全选</label><input type="checkbox" id="select-all"/>',
@@ -448,120 +475,6 @@
         },
 
         /**
-         * 新增、修改、详情html，
-         * @param action {?string} 操作类型，默认add
-         * @param data {?object} 修改、详情对应的数据
-         * @returns {string} 编辑、详情页面字符串
-         */
-        getEditHtml: function(action, data){
-            var htm = [],
-                _this = this,
-                fileds = $.extend(true, [], this.config.fileds);
-
-            action = action || 'add';
-            data = data || {};
-
-            $.each(fileds, function (idx, item) {
-                if ( $.inArray(action, item.actions || []) == -1 ) return;
-
-                if (action == 'add') {
-                    $.each(data, function (i, n) {
-                        if (n.name == item.name) {
-                            item.value = n.value;
-                            if (n.value) {
-                                item.holder = n.text;
-                            }
-                        }
-                    });
-                } else {
-                    item.value = _.isUndefined(data[item.name]) ? '' : data[item.name];
-                }
-
-                item.type == 'select' && ( item.selAll = false );
-
-                var messages = item.checkMessage || {},
-                    id = constants.FILED_DEFAULT_MAP[item.type].tpl,
-                    $tpl = $(MU.tpl('filed-edit-tpl', item));
-
-                if ( $.inArray(item.type, ['date', 'time']) != -1 ) {
-                    item.dataType = item.type;
-                    item.value = _this.formatColumn(item.value, item, 'upd');
-                }
-                if ( item.type == 'checkbox' ) {
-                    item.value = (item.value || []).join(CONSTANTS.CHECKBOX_SPLIT);
-                }
-                item.type = constants.FILED_DEFAULT_MAP[item.type].type || item.type;
-
-                if ( action == 'info' ) {
-                    item.value = _this.formatColumn(item.value, item, 'info');
-                    $tpl = $(MU.tpl('filed-info-tpl', item));
-                } else {
-                    var $inp = $tpl
-                        .find('.form-group')
-                        .append(MU.tpl(id, item))
-                        .find('[name="' + item.name + '"]')
-                        .attr(messages);
-                    item.attrs && $inp.attr(item.attrs);
-                }
-                htm.push($tpl[0].outerHTML);
-            });
-
-            if ( _this.config.editFormColumns == 2 ) {
-                var arr = [];
-                for ( var i = 0, len = htm.length; i < len; i += 2 ) {
-                    var tds = htm.slice(i, i + 2).join('').replace(/<tr>|<\/tr>/gm, '');
-                    tds.match(/<td>/gm).length == 1 && (tds = tds.replace('<td>', '<td colspan = "3">'));
-                    arr.push(tds);
-                }
-                return '<tr>' + arr.join('</tr><tr>') + '</tr>';
-            } else {
-                return htm.join('');
-            }
-
-        },
-
-        /**
-         * 非默认操作html
-         * @param action {!string} 操作类型
-         * @returns {string} 对应弹框页面的html
-         */
-        getOptHtml: function (action, data) {
-            var htm = [],
-                _this = this,
-                fileds = $.extend(true, [], this.config.fileds);
-
-            $.each(fileds, function (idx, item) {
-                if ( $.inArray(action, item.actions) == -1 ) return;
-
-                item.type == 'select' && ( item.selAll = false );
-
-                var messages = item.checkMessage || {},
-                    id = constants.FILED_DEFAULT_MAP[item.type].tpl,
-                    $tpl = $(MU.tpl('filed-edit-tpl', item));
-
-                if ( $.inArray(item.type, ['date', 'time']) != -1 ) {
-                    item.dataType = item.type;
-                    item.value = _this.formatColumn(item.value, item, 'upd');
-                }
-                if ( item.type == 'checkbox' ) {
-                    item.value = (item.value || []).join(CONSTANTS.CHECKBOX_SPLIT);
-                }
-                item.type = constants.FILED_DEFAULT_MAP[item.type].type || item.type;
-
-                var $inp = $tpl
-                    .find('.form-group')
-                    .append(MU.tpl(id, item))
-                    .find('[name="' + item.name + '"]')
-                    .attr(messages);
-                item.attrs && $inp.attr(item.attrs);
-
-                htm.push($tpl[0].outerHTML);
-            });
-
-            return htm.join('');
-        },
-
-        /**
          * 事件绑定
          */
         bindEvents: function(){
@@ -574,22 +487,20 @@
                 }
             });
 
+            // search
             $('.ac-search').click(function(){
                 _this.optSearch(true);
             });
 
-            var add = _.find(this.config.actions, function(action){
-                return action.action == 'add';
-            });
+            // add
+            var add = this.findAction('add');
             add && $('.ac-add').click(function(){
-                _this.optAdd(add);
+                _this.optDefaults(add);
             });
 
+            // default operation
             $.each(['upd', 'del', 'info', 'copy'], function(idx, item){
-                var action = _.find(_this.config.actions, function(action){
-                    return action.action == item;
-                });
-
+                var action = _this.findAction(item);
                 action && $('#data-table').on('click', '.ac-' + item, function(){
                     _this.optDefaults(action, $(this));
                 });
@@ -610,6 +521,7 @@
                 }
             });
 
+            // select
             $('#data-table').on('click', '#select-all', function () {
                 $('#data-table').find('.select-data').prop('checked', $(this).is(':checked'));
             }).on('click', '.select-data', function () {
@@ -620,7 +532,7 @@
                     }
                 })
                 $('#select-all').prop('checked', allChecked);
-            }).on('click', '.glyphicon', function () {
+            })/*.on('click', '.glyphicon', function () {
                 if (!$(this).hasClass('glyphicon-arrow-up')
                     && !$(this).hasClass('glyphicon-arrow-down')) return;
 
@@ -630,16 +542,16 @@
                         : $(this).parents('tr').next())
                         .find('.order-row').data('id');
                 _this.optOrder(clickId, orderId);
-            });
+            });*/
         },
 
         /**
          * 插件初始化，包括日期时间、下拉框、上传
          * @param container {?selector} 父容器
-         * @param addFlg {?boolean} 是否为新增操作，主要用于初始化下拉框值
+         * @param isAdd {?boolean} 是否为新增操作，主要用于初始化下拉框值
          */
-        initPlugins: function(container, addFlg){
-            var self = this;
+        initPlugins: function(container, isAdd){
+            var _this = this;
             container = container || 'body';
 
             //date|time
@@ -660,53 +572,45 @@
                 var $sel = $(this),
                     enumName = $sel.attr('data-enum'),
                     $inp = $sel.parent().siblings('input:hidden'),
-                    selected = addFlg ? undefined : $inp.val(),
+                    selected = isAdd ? undefined : $inp.val(),
                     enumId = $sel.attr('data-enum-id'),
-                    enumText = $sel.attr('data-enum-text');
+                    enumText = $sel.attr('data-enum-text'),
+                    parent = $sel.attr('data-enum-parent'),
+                    $parent = $('[name="' + parent + '"]', container);
 
-                var filed = _.find(self.config.fileds, function(filed){
+                var filed = _.find(_this.config.fileds, function(filed){
                     return filed.name == $inp.attr('name');
                 });
 
-                // if(!$sel.attr('data-enum-parent')){
+                if (!isAdd || !parent) { // 级联的下拉框新增不需要初始化
                     if (enums[enumName]) {
-                        manageUtil.initEnumSelect($sel, selected, filed.onSelect);
+                        MU.initEnumSelect($sel, selected, filed.onSelect, parent && $parent.val() || undefined);
                     } else if (/\//.test(enumName)) {
                         var enumConfig = {
                             url: enumName,
                             id: enumId,
                             name: enumText,
-                            selMap: self.config.commonSelectMap,
+                            selMap: _this.config.commonSelectMap,
                             filedName: filed.name,
-                            onSelect: filed.onSelect
+                            onSelect: filed.onSelect,
+                            parentValue: parent && $parent.val()
                         }
-                        manageUtil.initAjaxSelect($sel, enumConfig, selected);
+                        MU.initAjaxSelect($sel, enumConfig, selected);
                     }
-                // }
-            });
-            $('ul.dropdown-menu[data-enum-parent]', container).each(function () {
-                var $sel = $(this),
-                    enumName = $sel.attr('data-enum'),
-                    $inp = $sel.parent().siblings('input:hidden'),
-                    enumId = $sel.attr('data-enum-id'),
-                    enumText = $sel.attr('data-enum-text');
-
-                var filed = _.find(self.config.fileds, function (filed) {
-                    return filed.name == $inp.attr('name');
-                });
-
-                var parent = $sel.attr('data-enum-parent'),
-                    enumConfig = {
+                }
+                
+                // 级联
+                if (parent) {
+                    MU.initParentSelect($sel, $parent, {
                         enumName: enumName,
                         id: enumId,
                         name: enumText,
                         onSelect: filed.onSelect,
-                        filedName: filed.name
-                    },
-                    $parent = $('[name="' + parent + '"]', container);
-
-                enumConfig.container = container;
-                manageUtil.initParentSelect($sel, $parent, enumConfig);
+                        filedName: filed.name,
+                        selected: selected,
+                        container: container
+                    });
+                }
             });
 
             //color
@@ -722,10 +626,10 @@
                 pluginUtil.uploadImg($this, function(data){
                     var json = JSON.parse(data),
                         url = json.value;
-                    manageUtil.imgUploaded($this, url);
+                    MU.imgUploaded($this, url);
                 });
 
-                _url && manageUtil.imgUploaded($this, _url);
+                _url && MU.imgUploaded($this, _url);
             });
 
             //checkbox
@@ -736,7 +640,7 @@
                     enumDatas = []
 
                 if (enums[enumName]) {
-                    manageUtil.initCheckbox($this, enums[enumName])
+                    MU.initCheckbox($this, enums[enumName])
                 } else if (/\//.test(enumName)) {
                     $.get(enumName, function(result){
                         var datas = result.value.data
@@ -744,12 +648,11 @@
                             data.enumId && (this.value = this[data.enumId]);
                             data.enumText && (this.name = this[data.enumText]);
                         });
-                        self.config.commonSelectMap[data.name] = datas
-                        manageUtil.initCheckbox($this, datas)
+                        _this.config.commonSelectMap[data.name] = datas
+                        MU.initCheckbox($this, datas)
                     })
                 }
             })
-
         },
 
         /**
@@ -757,17 +660,27 @@
          * @param action
          * @param $o
          */
-        optDefaults: function(action, $o){
-            var _this = this;
+        optDefaults: function(action, $o) {
 
-            switch ( action.action ) {
+            if (!action.url) {
+                action.callbackFn && action.callbackFn();
+                return;
+            }
+
+            switch (action.action) {
+                case 'add':
+                    this.optAdd(action);
+                    break;
                 case 'upd':
                 case 'copy':
-                    _this.optUpd(action, $o, action.action == 'copy'); break;
+                    this.optUpd(action, $o, action.action == 'copy');
+                    break;
                 case 'del':
-                    _this.optDel(action, $o); break;
+                    this.optDel(action, $o);
+                    break;
                 case 'info':
-                    _this.optInfo(action, $o); break;
+                    this.optInfo(action, $o);
+                    break;
                 default :
                     break;
             }
@@ -778,29 +691,23 @@
          * @param add {!object} 新增操作配置
          */
         optAdd: function(add){
-            if ( !add.url ) {
-                add.callbackFn && add.callbackFn();
-                return;
-            }
+            var _this = this,
+                fromSearchData = [],
+                _name, _value, _text;
 
-            var _this = this, valueInfo = [],  _name, _value, _text,
-                $form = $(MU.tpl('form-edit-tpl'));
-            $.each(_this.config.fileds, function(i, index) {
-                if(index.isAddInfo) {
+            // 从查询条件中初始化值到新增界面
+            $.each(_this.config.fileds, function(i, item) {
+                if(item.initFromSearch) {
                     _name = index.name;
                     _value = $('[name="' + index.name + '"]').attr('value');
                     _text = $('[data-info-name="' + index.name + '"]').find('i').text();
-                    valueInfo.push({name:_name, value:_value, text:_text});
+                    fromSearchData.push({name:_name, value:_value, text:_text});
                 }
             });
-            $('#common-modal').modal('show');
-            $('#common-label').text(add.text);
-            $form.find('table.modify-table').append(_this.getEditHtml('add', valueInfo));
-            $('#common-body').html($form[0].outerHTML);
-            this.initPlugins($('#common-modal'), true);
-            add.initFn && add.initFn(valueInfo);
-            $('#common-edit-form').validation();
-            _this.optEdit(add, _this);
+
+            this.showModal(add, fromSearchData);
+
+            this.optEdit(add);
         },
 
         /**
@@ -810,103 +717,73 @@
          * @param copyFlg {?boolean} 是否为复制操作
          */
         optUpd: function(upd, $o, copyFlg){
-            if ( !upd.url ) {
-                upd.callbackFn && upd.callbackFn();
-                return;
-            }
+            var _this = this,
+                param = {};
 
-            var _this = this;
-
-            $('#common-modal').modal('show');
-            $('#common-label').text(upd.text);
-
-            var info = _.find(this.config.actions, function(action){
-                return action.action == 'info';
-            });
-            var param = {};
             param[this.idFiled] = $o.attr('data-' + this.idFiled);
-            $.get(info.url, param, function(bd){
+
+            $.get(this.urls.info, param, function(bd){
                     if ( bd.code != 200 ) return;
 
-                    var $form = $(MU.tpl('form-edit-tpl',
-                        copyFlg ? {} : {name: _this.idFiled, value: bd.value[_this.idFiled]}
-                    ));
-                    upd.initFn && upd.initFn(bd.value, $o);
-                    $form.find('table.modify-table').append(_this.getEditHtml('upd', bd.value));
-                    $('#common-body').html($form[0].outerHTML);
-                    _this.initPlugins($('#common-modal'), false);
+                    _this.showModal(upd, bd.value, 
+                        copyFlg ? {} : {name: _this.idFiled, value: bd.value[_this.idFiled]});
 
-                    $('#common-edit-form').validation();
-
-                    upd.beforEditCallbackFn && upd.beforEditCallbackFn();
-                    _this.optEdit(upd, _this);
+                    _this.optEdit(upd);
                 });
         },
 
         /**
          * 保存操作
          * @param action {!object} 操作配置
-         * @param _this {!CommonPage}
          */
-        optEdit: function(action, _this){
+        optEdit: function(action){
+            var _this = this;
             $('.ac-sure').off('click').click(function(){
-                if (!$('#common-edit-form').valid(this, '请按照规则填写表单信息.')) return false;
+                if (!$('#common-edit-form').valid(this, CONSTANTS.VALID_TIP)) {
+                    return false;
+                }
 
-				action.beforeSubmit && action.beforeSubmit();
-
-                $.post(action.url, $('#common-edit-form').serializeArray(), function(bd){
-                    if (bd.code == 200) {
-                        manageUtil.alert(action.text + '成功.', function(){
-                            $('#common-modal').modal('hide');
-                            _this.optSearch( action.type == 'add' );
-                            action.callbackFn && action.callbackFn.call(this, bd);
-                        });
-                    } else {
-                        manageUtil.alert(action.text + '失败：\n' + bd.message, function(){
-                            action.callbackFn && action.callbackFn.call(this, bd);
-                        });
-                    }
+                var param = $('#common-edit-form').serializeArray();
+				
+                action.beforeSubmit && action.beforeSubmit(param);
+                
+                $.post(action.url, param, function(bd){
+                    _this.closeModal(bd, action);
                 });
             });
         },
 
-        saveOrder: function(action, order, data) {
-            data['order'] = order;
-            var _this = this;
-            $.post(action.url, data, function(bd){
-                if (bd.code == 200) {
-                    _this.optSearch( action.type == 'add' );
-                } else {
-                    manageUtil.alert(action.text + '失败：\n' + bd.message, function(){
-                        action.callbackFn && action.callbackFn.call(this, bd);
-                    });
-                }
-            });
-        },
+        // saveOrder: function(action, order, data) {
+        //     data['order'] = order;
+        //     var _this = this;
+        //     $.post(action.url, data, function(bd){
+        //         if (bd.code == 200) {
+        //             _this.optSearch( action.type == 'add' );
+        //         } else {
+        //             MU.alert(action.text + '失败：\n' + bd.message, function(){
+        //                 action.callbackFn && action.callbackFn.call(this, bd);
+        //             });
+        //         }
+        //     });
+        // },
 
-        filterByUpdate: function(data) {
-            var _this = this;
-            var result = {};
-            result[_this.idFiled] = data[_this.idFiled];
-            _.each(_this.config.fileds, function(field) {
-                if(_.isUndefined(field.actions) || _.contains(field.actions, 'upd')) {
-                    result[field.name] = data[field.name];
-                }
-            });
-            var pkvs = window.location.search.split('&');
-            pkvs.shift();
-            _.each(pkvs, function(pkv) {
-                var a = pkv.split('=');
-                result[a[0]] = a[1];
-            });
-            return result;
-        },
-
-        getAction: function(_this, name) {
-            return _.find(_this.config.actions, function(action){
-                return action.action == name;
-            });
-        },
+        // filterByUpdate: function(data) {
+        //     var _this = this;
+        //     var result = {};
+        //     result[_this.idFiled] = data[_this.idFiled];
+        //     _.each(_this.config.fileds, function(field) {
+        //         if(_.isUndefined(field.actions) || _.contains(field.actions, 'upd')) {
+        //             result[field.name] = data[field.name];
+        //         }
+        //     });
+        //     var pkvs = window.location.search.split('&');
+        //     pkvs.shift();
+        //     _.each(pkvs, function(pkv) {
+        //         var a = pkv.split('=');
+        //         result[a[0]] = a[1];
+        //     });
+        //     return result;
+        // },
 
         /**
          * 默认详情操作
@@ -914,26 +791,16 @@
          * @param $o {!jquery object} 详情操作按钮
          */
         optInfo: function(info, $o){
-            if ( !info.url ) {
-                info.callbackFn && info.callbackFn();
-                return;
-            }
+            var _this = this,
+                param = {};
 
-            var _this = this;
-
-            $('#common-modal').modal('show');
-            $('#common-label').text(info.text);
-
-            var param = {};
             param[this.idFiled] = $o.attr('data-' + this.idFiled);
+
             $.get(info.url, param, function(bd){
+
                     if ( bd.code != 200 ) return;
 
-                    var $form = $(MU.tpl('form-edit-tpl'));
-                    $form.find('table.modify-table').append(_this.getEditHtml('info', bd.value));
-                    $('#common-body').html($form[0].outerHTML);
-
-                    info.initFn && info.initFn(bd.value);
+                    _this.showModal(info, bd.value);
             });
 
             $('.ac-sure').off('click').click(function(){
@@ -948,22 +815,19 @@
          */
         optDel: function(del, $o){
             var _this = this;
-            var param = {};
-            param[this.idFiled] = $o.attr('data-' + this.idFiled);
-            manageUtil.confirm('确认删除？', function(){
-                del.initFn && del.initFn($o);
+            
+            del.initFn && del.initFn();
+
+            MU.confirm('确认删除？', function(){
+
+                var param = {};
+                param[this.idFiled] = $o.attr('data-' + this.idFiled);
+                
+                del.beforeSubmit && del.beforeSubmit(param);            
+
                 $.post(del.url, param, function(bd){
-                        if ( bd.code == 200 ) {
-                            manageUtil.alert('删除成功.', function(){
-                                _this.optSearch();
-                                del.callbackFn && del.callbackFn.call(this, bd);
-                            });
-                        } else {
-                            manageUtil.alert('删除失败:\n' + bd.message, function(){
-                                del.callbackFn && del.callbackFn.call(this, bd);
-                            });
-                        }
-                    });
+                    _this.closeModal(bd, del);
+                });
             });
         },
 
@@ -972,16 +836,16 @@
          * @param clickId {!string} 点击行id
          * @param orderId {!string} 交换顺序的行id
          */
-        optOrder: function (clickId, orderId) {
-            var _this = this;
-            $.post(this.config.order.orderRowUrl, {current: clickId, next: orderId}, function (bd) {
-                if (bd.code != 200) {
-                    MU.alert('操作失败：\n' + bd.message);
-                } else {
-                    _this.optSearch(false);
-                }
-            });
-        },
+        // optOrder: function (clickId, orderId) {
+        //     var _this = this;
+        //     $.post(this.config.order.orderRowUrl, {current: clickId, next: orderId}, function (bd) {
+        //         if (bd.code != 200) {
+        //             MU.alert('操作失败：\n' + bd.message);
+        //         } else {
+        //             _this.optSearch(false);
+        //         }
+        //     });
+        // },
 
         /**
          * 自定义操作
@@ -993,49 +857,57 @@
             var isSelect = action.selectChild && action.selectChild.pageUrl;
             var selectData = getSelectData();
             var _html = this.getOptHtml(action.action);
-            var _this = this;
 
             if (isBatch && !selectData.length) {
                 MU.alert('请选择数据');
                 return;
             }
 
-            if (_html) { // modal
-                this.showModal(action, isBatch ? selectData : $o)
-
-                $('.ac-sure').off('click').click(function () {
-                    if (!$('#common-edit-form').valid(this, '请按照规则填写表单信息.')) 
-                        return false;
-
-                    if (action.url) {
-                        var data = $o.data(),
-                            formValues = $('#common-edit-form').serializeArray();
-                        for (var k in data) {
-                            formValues.push({name: k, value: data[k]})
-                        }
-                        $.post(action.url, formValues, function (result) {
-                            if (result.code == 200) {
-                                MU.alert(action.text + '成功', false, function () {
-                                    _this.closeModal();
-                                    _this.optSearch(true);
-                                });
-                            } else {
-                                MU.alert(action.text + '失败：\n' + result.message);
-                            }
-                        });
-                    } else {
-                        action.callbackFn && action.callbackFn($o, $('#common-edit-form').serializeArray());
-                        action.resetCheck && _this.resetCheck();
-                    }
-                })
+            if (_html) {
+                this.optModal(action, $o, isBatch ? selectData : $o);
             } else {
                 if (isSelect) {
                     this.optSelect(action, $o);
                 } else {
-                    action.initFn && action.initFn(isBatch ? selectData : $o);
-                    action.resetCheck && _this.resetCheck();
+                    action.callbackFn && action.callbackFn(isBatch ? selectData : $o);
+                    action.resetCheck && this.resetCheck();
                 }
             }
+        },
+
+        /**
+         * 弹框操作
+         * @param action {!object} action定义
+         * @param $o {!jquery object} 点击对象
+         * @param initData {any}
+         */
+        optModal: function (action, $o, initData) {
+            var _this = this;
+            this.showModal(action, initData);
+
+            $('.ac-sure').off('click').click(function () {
+
+                if (!$('#common-edit-form').valid(this, CONSTANTS.VALID_TIP)) {
+                    return false;
+                }
+
+                var data = $o.data(),
+                    formValues = $('#common-edit-form').serializeArray();
+                for (var k in data) {
+                    formValues.push({name: k, value: data[k]})
+                }
+
+                if (action.url) {
+                    action.beforeSubmit && action.beforeSubmit(formValues);
+
+                    $.post(action.url, formValues, function (result) {
+                        _this.closeModal(result, action);
+                    });
+                } else {
+                    action.callbackFn && action.callbackFn(formValues);
+                    action.resetCheck && _this.resetCheck();
+                }
+            })
         },
 
         /**
@@ -1063,30 +935,31 @@
             $('.ac-sure').off('click').click(function () {
                 var selected = getSelectData($('#data-table', 
                     window.frames['selectFrame'].document).find('.select-data:checked'));
+
                 if (!selected.length) {
                     MU.alert('请选择数据');
                     return;
+                }
+
+                var jsonParam = {jsonParams: JSON.stringify({
+                    currentData: $o.data(),
+                    selectData: selected
+                })}
+
+                if (action.url) {
+                    action.beforeSubmit && action.beforeSubmit(jsonParam);
+
+                    $.post(action.url, jsonParam, function(result){
+                        _this.closeModal(result, action/*, function () {
+                            $('#common-modal').find('.modal-dialog').removeClass('large');
+                        }*/);
+                    })
                 } else {
-                    if (action.url) {
-                        $.post(action.url, {jsonParams: JSON.stringify({
-                            currentData: $o.data(),
-                            selectData: selected
-                        })}, function(result){
-                            if (result.code == 200) {
-                                MU.alert(action.text + '成功', false, function () {
-                                    $('#common-modal').modal('hide').find('.modal-dialog').removeClass('large');
-                                    _this.optSearch(true);
-                                });
-                            } else {
-                                MU.alert(action.text + '失败：\n' + result.message);
-                            }
-                        })
-                    } else {
-                        action.callbackFn && action.callbackFn($o, selected);
-                        $('#common-modal').modal('hide').find('.modal-dialog').removeClass('large');
-                    }
+                    action.callbackFn && action.callbackFn(jsonParam);
+                    $('#common-modal').modal('hide')/*.find('.modal-dialog').removeClass('large')*/;
                 }
             });
+
             $('#common-modal').on('hide.bs.modal', function () {
                 setTimeout(function () {
                     $('#common-modal').find('.modal-dialog').removeClass('large');
@@ -1100,7 +973,7 @@
          */
         optSearch: function(fresh){
             var _this = this,
-                params = commonUtil.removeEmptyParam($('#search-form').serializeArray()),
+                params = CU.removeEmptyParam($('#search-form').serializeArray()),
                 settings = {
                     ajaxUrl: _this.urls.search,
                     argument: params,
@@ -1163,10 +1036,10 @@
                 }
                 data.batch = filedArr.join('');
 
-                // 行调序
-                if (page.config.order.orderRowIndex > -1) {
-                    data.orderRow = MU.tpl('order-tpl', {id: data[page.idFiled]});
-                }
+                // // 行调序
+                // if (page.config.order.orderRowIndex > -1) {
+                //     data.orderRow = MU.tpl('order-tpl', {id: data[page.idFiled]});
+                // }
 
                 //对象显示属性
                 $.each(page.config.fileds, function (i, n) {
@@ -1217,6 +1090,83 @@
             bd.recordsFiltered = bd.value.total;
 
             return views;
+        },
+
+        /**
+         * 生成弹框操作html，
+         * @param action {!string} 操作类型
+         * @param data {?object} 修改、详情对应的数据
+         * @returns {string} 弹框页面字符串
+         */
+        getOptHtml: function(action, data){
+            var htm = [],
+                _this = this,
+                fileds = $.extend(true, [], this.config.fileds);
+
+            data = data || {};
+
+            $.each(fileds, function (idx, item) {
+                if ($.inArray(action, item.actions || []) == -1) return;
+
+                // set value
+                if (action == 'add') { // init from search data
+                    $.each(data, function (i, d) {
+                        if (d.name == item.name) {
+                            item.value = d.value;
+                            // if (d.value) {
+                            //     item.holder = d.text;
+                            // }
+                        }
+                    });
+                } else {
+                    item.value = _.isUndefined(data[item.name]) ? '' : data[item.name];
+                }
+
+                // select 在弹框页面不显示全部选项
+                if (item.type == 'select') {
+                    item.selAll = false;
+                }
+
+                var messages = item.checkMessage || {},
+                    id = constants.FILED_DEFAULT_MAP[item.type].tpl,
+                    $tpl = $(MU.tpl('filed-edit-tpl', item));
+
+                if ($.inArray(item.type, ['date', 'time']) != -1) {
+                    item.dataType = item.type;
+                    item.value = _this.formatColumn(item.value, item, 'upd');
+                }
+                if (item.type == 'checkbox') {
+                    item.value = (item.value || []).join(CONSTANTS.CHECKBOX_SPLIT);
+                }
+
+                item.type = constants.FILED_DEFAULT_MAP[item.type].type || item.type;
+
+                if (action == 'info') {
+                    item.value = _this.formatColumn(item.value, item, 'info');
+                    $tpl = $(MU.tpl('filed-info-tpl', item));
+                } else {
+                    var $inp = $tpl
+                        .find('.form-group')
+                        .append(MU.tpl(id, item))
+                        .find('[name="' + item.name + '"]')
+                        .attr(messages);
+                    item.attrs && $inp.attr(item.attrs);
+                }
+
+                htm.push($tpl[0].outerHTML);
+            });
+
+            if (this.config.editFormColumns == 2) {
+                var arr = [];
+                for ( var i = 0, len = htm.length; i < len; i += 2 ) {
+                    var tds = htm.slice(i, i + 2).join('').replace(/<tr>|<\/tr>/gm, '');
+                    tds.match(/<td>/gm).length == 1 && (tds = tds.replace('<td>', '<td colspan = "3">'));
+                    arr.push(tds);
+                }
+                return '<tr>' + arr.join('</tr><tr>') + '</tr>';
+            } else {
+                return htm.join('');
+            }
         },
 
         /**
@@ -1272,21 +1222,21 @@
                         _text = val;
                         _title = val;
                 }
-                if(filed.type === 'order') {
-                    var idv = allVal[this.idFiled];
-                    var idn = 'data-' + this.idFiled;
-                    var $o = $(this);
-                    var _this = this;
-                    _this.optDefaults('upd', $o);
-                    $(document).off('change', '#field-order-'+idv).on('change', '#field-order-'+idv, function(e) {
-                        var order = $(this).val();
-                        var ia = _this.getAction(_this, 'info');
-                        $.get(ia.url, {'id': idv}, function(data) {
-                            _this.saveOrder(_this.getAction(_this, 'upd'), order, _this.filterByUpdate(data.data));
-                        });
-                    });
-                    _text = '<input value="' + val + '" style="width: 80px; text-align: center;" id="field-order-'+idv+'"/>';
-                }
+                // if(filed.type === 'order') {
+                //     var idv = allVal[this.idFiled];
+                //     var idn = 'data-' + this.idFiled;
+                //     var $o = $(this);
+                //     var _this = this;
+                //     _this.optDefaults('upd', $o);
+                //     $(document).off('change', '#field-order-'+idv).on('change', '#field-order-'+idv, function(e) {
+                //         var order = $(this).val();
+                //         var ia = _this.findAction('info');
+                //         $.get(ia.url, {'id': idv}, function(data) {
+                //             _this.saveOrder(_this.findAction('upd'), order, _this.filterByUpdate(data.data));
+                //         });
+                //     });
+                //     _text = '<input value="' + val + '" style="width: 80px; text-align: center;" id="field-order-'+idv+'"/>';
+                // }
             }
 
             if (action == 'upd')  return _text;
@@ -1301,30 +1251,57 @@
         /**
          * 弹出模态框
          * @param action {!object}
-         * @param $o
+         * @param values {any}
          */
-        showModal: function (action, $o) {
-            var $form = $(MU.tpl('form-edit-tpl'));
+        showModal: function (action, values, idValue) {
+
+            var $form = $(MU.tpl('form-edit-tpl'), idValue);
+
             $('#common-modal').modal('show');
             $('#common-label').text(action.text);
-            $form.find('table.modify-table').append(this.getOptHtml(action.action));
+
+            $form.find('table.modify-table').append(this.getOptHtml(action.action, values));
+
             $('#common-body').html($form[0].outerHTML);
-            this.initPlugins($('#common-modal'), true);
-            $o && action.initFn && action.initFn($o);
+
+            this.initPlugins($('#common-modal'), action.action == 'add');
+
+            action.initFn && action.initFn(values);
+
             $('#common-edit-form').validation();
         },
 
         /**
          * 关闭模态框
+         * @param result {object} 后台接口返回
+         * @param action {object} 操作配置对象
          */
-        closeModal: function () {
-            $('#common-modal').modal('hide');
+        closeModal: function (result, action, callback) {
+
+            var _this = this;
+
+            if (result.code == 200) {
+                MU.alert(action.text + '成功.', function(){
+                    _this.optSearch(action.type == 'add');
+                    $('#common-modal').modal('hide');
+
+                    callback && callback();
+                });
+            } else {
+                MU.alert(action.text + '失败：\n' + result.message);
+            }
+
+            action.callbackFn && action.callbackFn(result);
         },
 
+        // 
         resetCheck: function () {
             $('.select-data, #select-all').prop('checked', false);
         },
 
+        /**
+        * get select filed value
+        */
         findSelectText: function (val) {
             var _text;
             $.each(this.config.commonSelectMap, function (i, n) {
@@ -1335,6 +1312,15 @@
                 });
             });
             return _text;
+        },
+
+        /**
+        * get action by name
+        */
+        findAction: function(name) {
+            return _.find(this.config.actions, function(action){
+                return action.action == name;
+            });
         }
     };
 

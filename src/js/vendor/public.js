@@ -628,14 +628,21 @@ var manageUtil = {
      * @param $sel {jquery object} 需要初始化的元素
      * @param selected {*} 初始化完成后需要选中的值
      * @param onSelect {function} 下来选择后的回调
+     * @param parentValue {?string} 父级值
      */
-    initEnumSelect: function($sel, selected, onSelect){
+    initEnumSelect: function($sel, selected, onSelect, parentValue){
         var _enums = enums[$sel.attr('data-enum')];
 
         if (!_.isArray(_enums)) {
             var _values = [];
             for (var k in _enums) {
-                _values = _values.concat(_enums[k]);
+                if (parentValue !== undefined) {
+                    if (parentValue == k) {
+                        _values = _enums[k];
+                    }
+                } else {
+                    _values = _values.concat(_enums[k]);    
+                }
             }
             _enums = _values;
         }
@@ -656,10 +663,15 @@ var manageUtil = {
      * @param conf.id {?string} 对应枚举value中的字段名称
      * @param conf.name {?string} 对应枚举text中的字段名称
      * @param conf.param {?object} 请求枚举附加参数
+     * @param conf.parentValue {?string} 父级值
      */
     initAjaxSelect: function($sel, conf, selected){
+        var data = conf.param || {};
+        if (conf.parentValue) {
+            data[$sel.attr('data-enum-parent')] = conf.parentValue;
+        }
         $.ajax(conf.url, {
-            data: conf.param || {},
+            data: data,
             async: false,
             success: function(bd){
                 if ( bd.code != 200 ) return;
@@ -823,7 +835,8 @@ var CONSTANTS = {
     TIME_END_HOLDER: '-结束',
     TIME_START_TEXT: '(>=)',
     TIME_END_TEXT: '(<=)',
-    CHECKBOX_SPLIT: ',,,,,'
+    CHECKBOX_SPLIT: ',,,,,',
+    VALID_TIP: '请按照规则填写表单信息.'
 }
 
 Date.prototype.format = function (format) {
