@@ -800,31 +800,8 @@ var manageUtil = {
         });
 
         return nav.join('');
-    },
-    
-    /**
-     * 查看详情
-     * @param fields [{text: '', value: ''}]
-     * @param title
-     */
-    showInfo: function (fields, title) {
-    	$('#common-modal').modal('show');
-        $('#common-label').text(title);
-        
-        var content = [];
-    	$.each(fields, function (idx, item) {
-    		content.push($(MU.tpl('filed-info-tpl', item))[0].outerHTML);
-    	});
-        
-        var $form = $(MU.tpl('form-edit-tpl'));
-        $form.find('table.modify-table').append(content.join(''));
-        $('#common-body').html($form[0].outerHTML);
-        
-        $('.ac-sure').off('click').click(function(){
-            $('#common-modal').modal('hide');
-        });
     }
-}
+};
 var MU = manageUtil;
 
 var CONSTANTS = {
@@ -894,12 +871,23 @@ $(function () {
 
     $.getJSON('./menu.json', function (json) {
         $('#nav-menu').append(MU.buildNav(json));
-        var pageMenu = $('li[data-page="' + page + '"]')
-        if (pageMenu.parent().hasClass('dropdown-menu')) {
-            pageMenu = pageMenu.parent().parent();
+        var pageMenu = $('li[data-page="' + page + '"]');
+        var addSelect = function ($select) {
+            $select.addClass('selected').siblings().removeClass('selected');
+            if ($select.parent().parent().hasClass('dropdown')) {
+                addSelect($select.parent().parent());
+            }
         }
-        pageMenu.addClass('selected');
-        pageMenu.siblings().removeClass('selected');
+        addSelect(pageMenu);
+
+        $('a.dropdown-toggle', '#nav-menu').click(function (e) {
+            if ($(this).parent().parent().hasClass('dropdown-menu')) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                $(this).parent().toggleClass('open');
+            }
+        })
     });
 
     
