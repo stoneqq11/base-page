@@ -142,9 +142,16 @@ var config = {
             selectChild: {
                 pageUrl: '/index.html?page=t-t&pageNumber=100'
             }
+        },
+        {
+            action: 'copyContent',
+            text: '复制内容',
+            clz: 'info',
+            isCopy: true,
+            relativeFileds: ['title']
         }
     ],
-    // operateWidth: '170px',
+    operateWidth: '350px',
     // operateMoreNumber: 2,
     isBatch: true,
     batchFields: ['id', 'status'],

@@ -54,6 +54,9 @@
             color: [
                 './css/vendor/color-picker.css',
                 './js/plugins/color-picker.js'
+            ],
+            copy: [
+                './js/plugins/clipboard.js'
             ]
         },
 
@@ -107,7 +110,7 @@
             //          系统提供操作【add--新增||upd--修改||del--删除||search--查询||info--详情||copy--复制】
             //      text {?string|function} 自定义方法必填，操作中文名称，为function时，参数是该行的数据
             //      url {!url} 接口调用url
-            //      initFn {?function} 初始化操作，参数为 fileds_relative obj
+            //      initFn {?function} 初始化操作，参数为 relativeFileds obj
             //      beforeSubmit {?function} 提交前回调
             //      callbackFn {?function} 完成操作后的回掉，参数为后台接口返回的result
             //      single {?boolean} 是否针对每条数据的操作，默认false将按钮放置search模块，默认操作忽略该属性
@@ -119,7 +122,8 @@
             //          pageUrl: '/index.html?page=t-t&pageNumber=100',
             //          dataUrl: '/manage/homepage/list',
             //          parentId: 'parentId'
-            //      }
+            //      },
+            //      isCopy {?boolean} 是否复制操作，复制内容在relativeFileds中配置
             //}, {}]
             actions: [],
 
@@ -244,7 +248,7 @@
 
             // actions
             $.each(this.config.actions, function(idx, item){
-                _this.actionValid(item);
+                _this.actionValid(item, typs);
             });
             this.config.actions = _.filter(this.config.actions, function(action){
                 return action.valid !== false;
@@ -301,7 +305,7 @@
         * action配置验证，需要指定action和text
         * 指定默认的显示clz
         */
-        actionValid: function (item) {
+        actionValid: function (item, typs) {
             item.text = item.text || constants.OPT_MAP[item.action].text || '';
             constants.OPT_MAP[item.action] && (item.single = constants.OPT_MAP[item.action].single);
 
@@ -313,6 +317,11 @@
 
             if (item.selectChild && item.selectChild.pageUrl) {
                 item.selectChild.pageUrl += '&isOperate=false&isBatch=true&isSelect=true'
+            }
+
+            if (item.isCopy) {
+                typs.push('copy');
+                item.single = true;
             }
 
             if (!item.clz && constants.OPT_MAP[item.action]) {
@@ -543,6 +552,33 @@
                         .find('.order-row').data('id');
                 _this.optOrder(clickId, orderId);
             });*/
+
+            this.initCopyFiled();
+        },
+
+        /**
+        * 复制操作，复制relativeFileds字段到剪切板
+        */
+        initCopyFiled: function() {
+            var copyActions = _.filter(this.config.actions, function(action){
+                return action.isCopy;
+            });
+
+            $.each(copyActions, function(idx, item){
+                var clipboard = new Clipboard('.ac-' + item.action, {
+                    text: function(trigger) {
+                        return trigger.getAttribute('data-' + item.relativeFileds[0]);
+                    }
+                });
+
+                clipboard.on('success', function(e) {
+                    MU.alert('复制成功', true);
+                });
+
+                clipboard.on('error', function(e) {
+                    MU.alert('复制失败');
+                });
+            });
         },
 
         /**
