@@ -45,4 +45,4 @@ response:
 
 
 <h2>配置</h2>
-戳链接：<a href="/CONFIG.md">配置</a>
+CONFIG.md：<a href="http://gitlab.meizu.com/shiquan/base-page/blob/master/CONFIG.md">配置</a>
