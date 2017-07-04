@@ -91,7 +91,7 @@
             //              fn:fnName 自定义验证函数名 【fn:manage.validName】
             //      】
             //      checkMessage {?object} 验证提示 {required-message: '', url-message: ''}
-            //      actions {?array} 该字段在哪些操作中显示，对应actions配置中的action值
+            //      actions {!array} 该字段在哪些操作中显示，对应actions配置中的action值
             //      attrs {} 字段需要额外添加的属性，命名自定
             //      enumName {?string} select类型必填，对应枚举
             //      enumId {?string} select类型，对应value值
@@ -1291,7 +1291,7 @@
          */
         showModal: function (action, values, idValue) {
 
-            var $form = $(MU.tpl('form-edit-tpl'), idValue);
+            var $form = $(MU.tpl('form-edit-tpl', idValue));
 
             $('#common-modal').modal('show');
             $('#common-label').text(action.text);
