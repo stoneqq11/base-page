@@ -28,7 +28,8 @@ var config = {
             name: 'title',
             text: '主题名称',
             type: 'text',
-            checkType: 'required',
+            checkType: 'required chinese',
+            attrs: {id: 1},
             actions: ['upd', 'add','list','info', 'batchAdd1', 'cust']
         },
         {
