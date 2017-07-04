@@ -110,18 +110,21 @@
 		</tr>
 		<tr>
 			<td>initFromSearch</td>
+			<td>initFromSearch: true</td>
 			<td>boolean</td>
 			<td>否</td>
 			<td>[select]新增是否初始化为当前查询条件的值</td>
 		</tr>
 		<tr>
 			<td>width</td>
+			<td>width: '200px'</td>
 			<td>string</td>
 			<td>否</td>
-			<td>['10%'|'100px']，列表中该列的宽度</td>
+			<td>列表中该列的宽度</td>
 		</tr>
 		<tr>
 			<td>checkType</td>
+			<td>checkType: 'required chinese'</td>
 			<td>string</td>
 			<td>否</td>
 			<td>
@@ -140,9 +143,10 @@
 		</tr>
 		<tr>
 			<td>checkMessage</td>
+			<td>checkMessage: {required-message: '标题不能为空'}</td>
 			<td>plan object</td>
 			<td>否</td>
-			<td>验证提示：{required-message: '', url-message: ''}，不填写则为默认提示</td>
+			<td>验证提示，不填写则为默认提示</td>
 		</tr>
 	</tbody>
 </table>

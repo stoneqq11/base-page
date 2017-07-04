@@ -45,4 +45,4 @@ response:
 
 
 <h2>配置</h2>
-戳链接：<a href="./CONFIG.md">配置</a>
+戳链接：<a href="/CONFIG.md">配置</a>
