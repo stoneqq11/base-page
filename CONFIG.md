@@ -148,6 +148,13 @@
 			<td>否</td>
 			<td>验证提示，不填写则为默认提示</td>
 		</tr>
+		<tr>
+			<td>showFn</td>
+			<td>showFn: function (val, rowData) { return rowData.link + val }</td>
+			<td>function</td>
+			<td>否</td>
+			<td>通过该接口处理界面要显示的内容</td>
+		</tr>
 	</tbody>
 </table>
 

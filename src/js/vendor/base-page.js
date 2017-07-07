@@ -567,7 +567,11 @@
             $.each(copyActions, function(idx, item){
                 var clipboard = new Clipboard('.ac-' + item.action, {
                     text: function(trigger) {
-                        return trigger.getAttribute('data-' + item.relativeFileds[0]);
+                        var _text = trigger.getAttribute('data-' + item.relativeFileds[0]);
+                        if (!_text) {
+                            MU.alert('内容为空，复制失败');
+                        }
+                        return _text;
                     }
                 });
 

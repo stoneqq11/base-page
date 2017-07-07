@@ -68,7 +68,10 @@ var config = {
             enumName:'AWARD_STATUS_CHILD',
             actions: ['list','info', 'search', 'add', 'upd'],
             type:'select',
-            enumParent: 'status'
+            enumParent: 'status',
+            showFn: function (val, rowData) {
+                return '<a href="' + rowData.link + '">'+ val +'</a>'
+            }
         },
         {
             name: 'contents',
@@ -149,7 +152,7 @@ var config = {
             text: '复制内容',
             clz: 'info',
             isCopy: true,
-            relativeFileds: ['title']
+            relativeFileds: ['endTime']
         }
     ],
     operateWidth: '350px',
