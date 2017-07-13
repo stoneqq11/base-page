@@ -10,7 +10,7 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(cookieParser())
 
-app.use('/', express.static(path.resolve(__dirname, '../src')));
+app.use('/src', express.static(path.resolve(__dirname, '../src')));
 
 app.use(routes);
 

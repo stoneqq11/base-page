@@ -289,6 +289,13 @@ var commonUtil = {
         return data;
     },
 
+    getCookie: function (name) {
+        var arr,reg = new RegExp("(^| )"+name+"=([^;]*)(;|$)")
+        if(arr = document.cookie.match(reg))
+        return unescape(arr[2])
+        else return null
+    },
+
     /**
      * 从url中获取参数值
      * @param key {string} 需要获取值的名称
@@ -793,13 +800,21 @@ var manageUtil = {
                 link.push(manageUtil.buildNav(item.children, true));
                 link.push('</ul></li>');
             } else {
-                link.push('<li data-page="' + CU.getUrlParam('page', item.location) + '"><a href="' + (item.location || 'javascript:') + '">' + item.name + '</a></li>');
+                link.push('<li data-page="' + MU.getPage(item.location) + '"><a href="' + (item.location || 'javascript:') + '">' + item.name + '</a></li>');
                 divider && idx != data.length - 1 && link.push('<li role="separator" class="divider"></li>');
             }
             nav.push(link.join(''));
         });
 
         return nav.join('');
+    },
+
+    getPage: function (url) {
+        if (!url) {
+            url = window.location.pathname
+        }
+
+        return url.replace(/^\/page/, '')
     }
 };
 var MU = manageUtil;
@@ -844,8 +859,8 @@ Date.prototype.format = function (format) {
 };
 
 $(function () {
-    var page = CU.getUrlParam('page');
-    page && $.getScript('./js/' + page.replace(/-/g, '/') + '.js');
+    var page = MU.getPage();
+    page && $.getScript('/src/js/' + page + '.js');
 
     // 回车搜索
     $('form[role="search"]').on('keydown', ':text', function(evt){
@@ -866,10 +881,12 @@ $(function () {
             window.location = 
                 'https://login.flyme.cn/login/login.html?service=NEWS&appuri=' 
                 + l + '&useruri=' + l + '&sid=unionlogin';
+        } else if (result.code == 403) {
+            MU.alert('无操作权限', true)
         }
     })
 
-    $.getJSON('./menu.json', function (json) {
+    $.getJSON('/src/menu.json', function (json) {
         $('#nav-menu').append(MU.buildNav(json));
         var pageMenu = $('li[data-page="' + page + '"]');
         var addSelect = function ($select) {
@@ -888,7 +905,32 @@ $(function () {
                 $(this).parent().toggleClass('open');
             }
         })
+
+        // auth control
+        /*var removeAuth = function ($auth) {
+            var $parent = $auth.parent();
+            var $prev = $auth.prev();
+            var $next = $auth.next();
+            
+            $auth.remove();
+            $prev.hasClass('divider') && $prev.remove();
+            $next.hasClass('divider') && $next.remove();
+
+            if (($parent.hasClass('dropdown-menu') && !$parent.find('li[data-page]').length)
+                    || $parent.hasClass('dropdown')) {
+                removeAuth($parent)
+            }
+        };
+        $.get('/service/user/auth/list', function (result) {
+            var auths = result.value
+            $('[data-page]').each(function () {
+                var $li = $(this)
+                if (!_.contains(auths, $li.data('page'))) {
+                    removeAuth($li)
+                }
+            })
+        });*/
     });
 
-    
+    $('#adminName').text(CU.getCookie('uname') || '');
 });

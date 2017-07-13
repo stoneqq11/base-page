@@ -37,26 +37,26 @@
         // 不同字段类型对应的插件资源
         SOURCE_MAP: {
             date: [
-                './css/vendor/jquery-ui.css',
-                './js/plugins/jquery-ui-datepicker.js'
+                '/src/css/vendor/jquery-ui.css',
+                '/src/js/plugins/jquery-ui-datepicker.js'
             ],
             time: [
-                './css/vendor/jquery-ui.css',
-                './js/plugins/jquery-ui.js',
-                './js/plugins/jquery-ui-timepicker-addon.js'
+                '/src/css/vendor/jquery-ui.css',
+                '/src/js/plugins/jquery-ui.js',
+                '/src/js/plugins/jquery-ui-timepicker-addon.js'
             ],
             img: [
-                './plugins/uploadify/uploadify.css',
-                './plugins/uploadify/html5uploader.css',
-                './plugins/uploadify/jquery-uploadify.min.js',
-                './plugins/uploadify/jquery.html5uploader.js'
+                '/src/plugins/uploadify/uploadify.css',
+                '/src/plugins/uploadify/html5uploader.css',
+                '/src/plugins/uploadify/jquery-uploadify.min.js',
+                '/src/plugins/uploadify/jquery.html5uploader.js'
             ],
             color: [
-                './css/vendor/color-picker.css',
-                './js/plugins/color-picker.js'
+                '/src/css/vendor/color-picker.css',
+                '/src/js/plugins/color-picker.js'
             ],
             copy: [
-                './js/plugins/clipboard.js'
+                '/src/js/plugins/clipboard.js'
             ]
         },
 
@@ -1093,6 +1093,8 @@
                     if (!n.single || n.isHide) return;
 
                     _.isFunction(n.text) && (n.text = n.text(item));
+
+                    if (!n.text) return;
 
                     var $opt = $(MU.tpl('ac-tpl', n)), attrs = {};
                     attrs['data-' + page.idFiled] = item[page.idFiled];
