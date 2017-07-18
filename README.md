@@ -1,7 +1,7 @@
 <h2>运行</h2>
 1. npm install
 2. node server/app
-3. localhost/index.html?page=t-t
+3. localhost/page/t/t
 
 <h2>接入后台系统</h2>
 1. MANAGE标题、用户名--/index.html中修改

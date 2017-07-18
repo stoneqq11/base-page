@@ -907,7 +907,7 @@ $(function () {
         })
 
         // auth control
-        /*var removeAuth = function ($auth) {
+        var removeAuth = function ($auth) {
             var $parent = $auth.parent();
             var $prev = $auth.prev();
             var $next = $auth.next();
@@ -925,12 +925,12 @@ $(function () {
             var auths = result.value
             $('[data-page]').each(function () {
                 var $li = $(this)
-                if (!_.contains(auths, $li.data('page'))) {
+                if (!_.contains(auths, '/page' + $li.data('page'))) {
                     removeAuth($li)
                 }
             })
-        });*/
+        });
     });
 
-    $('#adminName').text(CU.getCookie('uname') || '');
+    $('#adminName').text(decodeURIComponent(CU.getCookie('uname') || ''));
 });
