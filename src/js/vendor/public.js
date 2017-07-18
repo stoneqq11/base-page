@@ -292,7 +292,7 @@ var commonUtil = {
     getCookie: function (name) {
         var arr,reg = new RegExp("(^| )"+name+"=([^;]*)(;|$)")
         if(arr = document.cookie.match(reg))
-        return unescape(arr[2])
+        return decodeURIComponent(arr[2])
         else return null
     },
 
@@ -932,5 +932,5 @@ $(function () {
         });
     });
 
-    $('#adminName').text(decodeURIComponent(CU.getCookie('uname') || ''));
+    $('#adminName').text(CU.getCookie('uname') || '');
 });
