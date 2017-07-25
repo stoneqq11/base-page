@@ -79,7 +79,7 @@
             //            可选值【text||hidden||textarea||select||img||color||checkbox||date||time||number】
             //      isId: {?boolean} 是否主键字段
             //      value {?*} 初始值
-            //      width {?string} 列宽【10%||100px】
+            //      width {?string} 列宽【100px】
             //      checkType {?string} 验证类型，支持多个，以空格隔开，包括【
             //              required 不能为空，并在后面自动加*号
             //              url  表示 输入网址
@@ -561,13 +561,17 @@
         */
         initCopyFiled: function() {
             var copyActions = _.filter(this.config.actions, function(action){
-                return action.isCopy;
+                return action.isCopy && action.copyFn;
             });
+            var _this = this;
 
             $.each(copyActions, function(idx, item){
                 var clipboard = new Clipboard('.ac-' + item.action, {
                     text: function(trigger) {
-                        var _text = trigger.getAttribute('data-' + item.relativeFileds[0]);
+                        var param = {};
+                        param[_this.idFiled] = trigger.getAttribute('data-' + _this.idFiled);
+                        var result = $.ajax(_this.urls.info, {async: false, method: 'GET', data: param});
+                        var _text = item.copyFn(result.responseJSON.value, trigger);
                         if (!_text) {
                             MU.alert('内容为空，复制失败');
                         }
@@ -1057,7 +1061,7 @@
 
             var views = [];
             bd.value.data && $.each(bd.value.data, function (idx, item) {
-                var actions = ['<div class="btn-wrap"><div class="btn-group">'],
+                var actions = ['<div class="btn-wrap" style="width: ' + page.config.operateWidth + '"><div class="btn-group">'],
                     more = [],
                     data = _.clone(item),
                     filedArr = [];
@@ -1219,12 +1223,12 @@
          * @returns {*} 转换后的值
          */
         formatColumn: function(val, filed, action, allVal){
-            if ( val === undefined || val === '' )  return '';
-
             var _title = '', _text = '';
             if (filed.showFn && _.isFunction(filed.showFn)) {
                 _text = filed.showFn(val, allVal);
                 _title = '';
+            } else if (val === undefined || val === '') {
+                return '';
             } else {
                 switch(filed.type){
                     case 'date':
@@ -1286,7 +1290,8 @@
             return MU.tpl(action == 'info' ? 'info-tpl' : 'column-tpl', {
                 columnClz: filed.columnClz || constants.FILED_DEFAULT_MAP[filed.type].columnClz,
                 columnText: _text,
-                columnTitle: _title
+                columnTitle: _title,
+                width: filed.width || ''
             });
         },
 

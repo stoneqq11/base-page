@@ -13,7 +13,6 @@ var config = {
             name: 'sort',
             text: '排序',
             type: 'number',
-            width: '5%',
             checkType: 'required number',
             actions: ['upd', 'add','list','info'/*, 'search'*/]
         },
@@ -27,6 +26,7 @@ var config = {
         {
             name: 'title',
             text: '主题名称',
+            // width: '200px',
             type: 'text',
             checkType: 'required chinese',
             attrs: {id: 1},
@@ -152,7 +152,9 @@ var config = {
             text: '复制内容',
             clz: 'info',
             isCopy: true,
-            relativeFileds: ['endTime']
+            copyFn: function (rowData, btn) {
+                return rowData.id;
+            }
         }
     ],
     operateWidth: '350px',

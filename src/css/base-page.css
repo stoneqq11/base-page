@@ -231,15 +231,13 @@ thead > tr > th {
 }
 
 .column-filed {
-    display: block;
-    width: 100%;
-    max-width: 400px;
-}
-.column-filed.align-left {
-    text-align: left;
+    max-width: 600px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+}
+.column-filed.align-left {
+    text-align: left;
 }
 .column-filed.align-right {
     text-align: right;
@@ -331,6 +329,7 @@ thead > tr > th {
 .table-bordered>thead>tr {
     background: #3f3f3f;
     color: #fff;
+    white-space: nowrap;
 }
 
 .table-bordered>thead>tr>th,
@@ -354,7 +353,7 @@ thead > tr > th {
 }
 .btn-info {
     background-color: #428bca;
-    border-color: #428bca;
+    border-color: #39556d;
 }
 .btn-info:hover {
     background-color: #045e79;
