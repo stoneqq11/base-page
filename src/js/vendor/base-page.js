@@ -865,7 +865,7 @@
             MU.confirm('确认删除？', function(){
 
                 var param = {};
-                param[this.idFiled] = $o.attr('data-' + this.idFiled);
+                param[_this.idFiled] = $o.attr('data-' + _this.idFiled);
                 
                 del.beforeSubmit && del.beforeSubmit(param);            
 

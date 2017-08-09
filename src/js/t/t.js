@@ -1,6 +1,8 @@
 /**
  * config example
  */
+var clipboard;
+
 var config = {
     fileds: [
         {
@@ -93,8 +95,25 @@ var config = {
         {
             action: 'cust', 
             text: '其他', 
-            url: '/manage/homepage/list', 
-            clz: 'info'
+            clz: 'info',
+            callbackFn: function (formValues) {
+                var clip = new Clipboard('.ac-sure', {
+                    text: function() {
+                        var result = $.ajax(url, {async: false, data: formValues, method: 'POST'}).responseJSON
+                        return result.value.xxx
+                    }
+                });
+
+                clip.on('success', function(e) {
+                    $('#common-modal').modal('hide');
+                    MU.alert('复制xxxx成功', true);
+                });
+
+                clip.on('error', function(e) {
+                    $('#common-modal').modal('hide');
+                    MU.alert('复制xxx失败');
+                });
+            }
         },
         {
             action: 'batchAdd', 
@@ -124,7 +143,12 @@ var config = {
         },
         {
             action: 'select',
-            text: '选择子项目',
+            text: function(rowData) {
+                if (rowData.id == 1) {
+                    return '1'
+                }
+                return null
+            },
             single: true,
             clz: 'info',
             relativeFileds: ['id', 'sort'],
