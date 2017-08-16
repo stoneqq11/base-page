@@ -2,7 +2,8 @@
  * config example
  */
 var clipboard;
-
+window.TIME_START_TEXT = 'aaaa'
+window.TIME_END_TEXT = 'bbb'
 var config = {
     fileds: [
         {

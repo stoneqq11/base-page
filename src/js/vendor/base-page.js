@@ -1378,13 +1378,13 @@
         _start.name = _start.name + CONSTANTS.SEARCH_TIME_START;
         _start.dataType = _start.type;
         _start.holder += CONSTANTS.TIME_START_HOLDER;
-        _start.text += CONSTANTS.TIME_START_TEXT;
+        _start.text += (window.TIME_START_TEXT || CONSTANTS.TIME_START_TEXT);
         _start.type = constants.FILED_DEFAULT_MAP[_start.type].type;
 
         _end.name = _end.name + CONSTANTS.SEARCH_TIME_END;
         _end.dataType = _end.type;
         _end.holder += CONSTANTS.TIME_END_HOLDER;
-        _end.text += CONSTANTS.TIME_END_TEXT;
+        _end.text += (window.TIME_END_TEXT || CONSTANTS.TIME_END_TEXT);
         _end.type = constants.FILED_DEFAULT_MAP[_start.type].type;
 
         _start.dataMin = _end.name;
