@@ -440,22 +440,22 @@
                 });
             });
 
-            // 是否显示操作栏
-            if (conf.isOperate) {
-                fileds.push({
-                    title: '操作',
-                    data: 'actions',
-                    width: this.config.operateWidth,
-                    orderable: false
-                });
-            }
-
             // 是否显示选择栏
             if (conf.isBatch) {
                 fileds.unshift({
                     title: '<label for="select-all">全选</label><input type="checkbox" id="select-all"/>',
                     data: 'batch',
                     width: '45px',
+                    orderable: false
+                });
+            }
+
+            // 是否显示操作栏
+            if (conf.isOperate) {
+                fileds.unshift({
+                    title: '操作',
+                    data: 'actions',
+                    width: this.config.operateWidth,
                     orderable: false
                 });
             }

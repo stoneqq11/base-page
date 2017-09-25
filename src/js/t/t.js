@@ -40,6 +40,7 @@ var config = {
             text: '活动规则',
             type: 'textarea',
             checkType: 'required',
+            width: '300px',
             actions: ['upd', 'add','list','info']
         },
         {

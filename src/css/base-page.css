@@ -207,19 +207,24 @@
     height:16px;
     width:16px;
 }
-
+/*
 .panel-body {
     min-width: 1000px;
-}
+}*/
 
 /*****************datatable***************************/
 .dataTables_wrapper .row:first-child {
-    float: left;
+    float: right;
     margin-top: 5px;
 }
 
 .dataTables_wrapper .btn-group .btn {
     padding: 3px 12px;
+}
+
+.table-wrap .col-sm-12 {
+    overflow-x: auto;
+    clear: both;
 }
 
 thead > tr > th {
@@ -266,7 +271,7 @@ thead > tr > th {
 
 /*****************button***************************/
 #search-btns {
-    float: right;
+    float: left;
     padding: 13px 0 0 0;
 }
 
