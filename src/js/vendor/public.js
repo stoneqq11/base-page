@@ -873,7 +873,7 @@ Date.prototype.format = function (format) {
 
 $(function () {
     var page = MU.getPage();
-    page && $.getScript('/src/js/' + page + '.js');
+    page && $.getScript('/src/js' + page + '.js');
 
     // 回车搜索
     $('form[role="search"]').on('keydown', ':text', function(evt){
