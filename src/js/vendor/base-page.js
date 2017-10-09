@@ -18,7 +18,8 @@
             time: {tpl: 'date-tpl', columnClz: 'align-center', type: 'text'},
             textarea: {tpl: 'textarea-tpl', columnClz: 'text'},
             number: {tpl: 'input-tpl', columnClz: 'align-right', type: 'text'},
-            img: {tpl: 'img-init-tpl', columnClz: 'align-center'},
+            img: {tpl: 'upload-init-tpl', columnClz: 'align-center'},
+            file: {tpl: 'upload-init-tpl', columnClz: 'align-left'},
             color: {tpl: 'color-tpl', columnClz: 'align-center', type: 'text'},
             orderButton: {tpl: 'order-tpl', columnClz: 'align-center'},
             order: {tpl: 'input-tpl', columnClz: 'align-center'},
@@ -46,6 +47,12 @@
                 '/src/js/plugins/jquery-ui-timepicker-addon.js'
             ],
             img: [
+                '/src/plugins/uploadify/uploadify.css',
+                '/src/plugins/uploadify/html5uploader.css',
+                '/src/plugins/uploadify/jquery-uploadify.min.js',
+                '/src/plugins/uploadify/jquery.html5uploader.js'
+            ],
+            file: [
                 '/src/plugins/uploadify/uploadify.css',
                 '/src/plugins/uploadify/html5uploader.css',
                 '/src/plugins/uploadify/jquery-uploadify.min.js',
@@ -667,13 +674,13 @@
                 var $this = $(this),
                     _url = $this.siblings('.url-hide').val();
 
-                pluginUtil.uploadImg($this, function(data){
+                pluginUtil.uploadFile($this, function(data){
                     var json = JSON.parse(data),
                         url = json.value;
-                    MU.imgUploaded($this, url);
+                    MU.fileUploaded($this, url);
                 });
 
-                _url && MU.imgUploaded($this, _url);
+                _url && MU.fileUploaded($this, _url);
             });
 
             //checkbox

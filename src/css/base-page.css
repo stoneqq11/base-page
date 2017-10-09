@@ -199,6 +199,19 @@
     height:auto;
     background-color: #ccc;
 }
+.modify-icon.file {
+    width: auto;
+}
+.modify-icon.file span {
+    display: block;
+    width: 323px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.modify-icon.file .del-img {
+    top: 0;
+    right: 25px;
+}
 .del-img {
     position:absolute;
     display:block;

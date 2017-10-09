@@ -138,7 +138,7 @@ var pluginUtil = {
                 // 用来设置选择文件对话框中的提示文本
                 'fileTypeDesc': config.type.join('文件,') + '文件',
                 // 设置可以选择的文件的类型
-                'fileTypeExts': '*' + config.type.join(',*'),
+                'fileTypeExts': '*' + config.type.join(','),
                 // 设置为true当选择文件后就直接上传了，为false需要点击上传按钮才上传
                 'auto': true,
                 // 设置为true时可以上传多个文件
@@ -167,6 +167,17 @@ var pluginUtil = {
                     config.cb && config.cb(data);
                 }
             });
+        }
+    },
+
+    uploadFile: function($icon, cb) {
+        if ($icon.hasClass('img')) {
+            pluginUtil.uploadImg($icon, cb)
+        } else {
+            pluginUtil.upload($icon, {
+                cb: cb,
+                type: []
+            })
         }
     },
 
@@ -778,8 +789,10 @@ var manageUtil = {
      * @param $icon {jquery object} 上传按钮
      * @param url {url} 上传图片返回的url
      */
-    imgUploaded: function($icon, url){
-        $icon.hide().after(MU.tpl('img-upd-tpl', {url: url}));
+    fileUploaded: function($icon, url){
+        var tpl = $icon.hasClass('img') ? 'img-upd-tpl' : 'file-upd-tpl'
+        var type = $icon.hasClass('img') ? 'img' : 'file'
+        $icon.hide().after(MU.tpl(tpl, {url: url, type: type}));
         $icon.siblings('.url-hide').val(url);
 
         $('.J-del-img', $icon.siblings('.modify-icon')).click(function(){

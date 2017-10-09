@@ -161,14 +161,20 @@
 <input type="hidden" name="{{= data.name}}" class="form-control" value="{{= data.value}}"
         check-type="{{= data.checkType}}" data-info="{{= data.isAddInfo}}" />
 </script>
-<script id="img-init-tpl" type="text/template">
-<div id="{{= data.name}}-upload" class="icon browse-file" title="请上传"></div>
+<script id="upload-init-tpl" type="text/template">
+<div id="{{= data.name}}-upload" class="browse-file {{= data.type}}" title="请上传"></div>
 <input type="hidden" class="form-control url-hide" name="{{= data.name}}"
         value="{{= data.value}}" check-type="{{= data.checkType}}"/>
 </script>
 <script id="img-upd-tpl" type="text/template">
 <div class="modify-icon">
     <img src="{{= data.url}}" alt="logo" class="icon-img img-style" />
+    <a class="del-img J-del-img del-img-style" href="javascript:;">x</a>
+</div>
+</script>
+<script id="file-upd-tpl" type="text/template">
+<div class="modify-icon {{= data.type}}">
+    <span class="file-name">{{= data.url}}</span>
     <a class="del-img J-del-img del-img-style" href="javascript:;">x</a>
 </div>
 </script>

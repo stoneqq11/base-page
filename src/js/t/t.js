@@ -22,7 +22,7 @@ var config = {
         {
             name: 'image',
             text: '图片',
-            type: 'img',
+            type: 'file',
             checkType: 'required',
             actions: ['upd', 'add',/*'list',*/'info']
         },
