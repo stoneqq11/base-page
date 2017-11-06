@@ -801,7 +801,7 @@ var manageUtil = {
         });
     },
 
-    editorInit: function (_html, disable) {
+    editorInit: function (_html, config, disable) {
         var E = window.wangEditor
         var now_editor = new E('#editor')
         now_editor.customConfig.onchange = function (html) {
@@ -809,11 +809,11 @@ var manageUtil = {
             console.log('onblur', html)
             $('.editorval').val(html)
         }
+        now_editor.customConfig.zIndex = 10
+        now_editor.customConfig.uploadImgServer = config.url || '/common/upload.do'  // 上传图片到服务器        
         now_editor.create({})
         now_editor.txt.html(_html)
         if(disable) now_editor.$textElem.attr('contenteditable', false)
-        $('.w-e-menu').css({'zIndex': 10})
-        $('.w-e-text-container').css({'zIndex': 11})
     },  
 
     buildNav: function (data, divider) {
