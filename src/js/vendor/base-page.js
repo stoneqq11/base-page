@@ -712,9 +712,9 @@
             //editor
             $('.editor', container).each(function(){
                 var $this = $(this),
-                    _url = $this.siblings('.url-hide').val();
+                    _html = $('.editorval').val();
                 console.log('_this.config', _this.config)
-                MU.editorInit(_url, _this.config)
+                MU.editorInit(_html, _this.config)
                 
                 $('#common-modal')
                 .modal('show').find('.modal-dialog').addClass('large');

@@ -809,6 +809,17 @@ var manageUtil = {
             console.log('onblur', html)
             $('.editorval').val(html)
         }
+        now_editor.customConfig.onfocus = function (html) {
+            // html 即编辑器中的内容
+            console.log('onblur', html)
+            $('.w-e-text-container').css({border:'1px solid #428bca'})
+        }
+        now_editor.customConfig.onblur = function (html) {
+            // html 即编辑器中的内容
+            console.log('onblur', html)
+            $('.w-e-text-container').css({border:'1px solid #3c763d'})
+        }
+
         now_editor.customConfig.zIndex = 10
         now_editor.customConfig.uploadImgServer = config.url || '/common/upload.do'  // 上传图片到服务器        
         now_editor.create({})
