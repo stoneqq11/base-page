@@ -416,8 +416,8 @@ input[type=checkbox] {
 }
 
 
-.editor, #editor{
-    width: 100%;
+.editor,#editor {
+    width: 1200px;
 }
 
 .editor-info{
