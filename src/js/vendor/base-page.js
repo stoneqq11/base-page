@@ -23,6 +23,7 @@
             color: {tpl: 'color-tpl', columnClz: 'align-center', type: 'text'},
             orderButton: {tpl: 'order-tpl', columnClz: 'align-center'},
             order: {tpl: 'input-tpl', columnClz: 'align-center'},
+            editor: {tpl: 'editor-init-tpl', columnClz: 'align-left'}            
         },
 
         // 默认操作对应的名称和显示位置
@@ -64,6 +65,9 @@
             ],
             copy: [
                 '/src/js/plugins/clipboard.js'
+            ],
+            editor: [
+                '/src/js/plugins/wangEditor.min.js'
             ]
         },
 
@@ -459,7 +463,7 @@
 
             // 是否显示操作栏
             if (conf.isOperate) {
-                fileds.unshift({
+                fileds.push({
                     title: '操作',
                     data: 'actions',
                     width: this.config.operateWidth,
@@ -704,6 +708,17 @@
                     })
                 }
             })
+
+            //editor
+            $('.editor', container).each(function(){
+                var $this = $(this),
+                    _url = $this.siblings('.url-hide').val();
+
+                MU.editorInit(_url)
+                
+                $('#common-modal')
+                .modal('show').find('.modal-dialog').addClass('large');
+            });
         },
 
         /**
@@ -1251,6 +1266,11 @@
                     case 'img':
                         _text = '<img src="' + val + '" alt="icon"/>';
                         break;
+                    case 'editor':
+                        _text = '<div class="editor-info">'+val+'</div>';
+                         $('#common-modal')
+                            .modal('show').find('.modal-dialog').addClass('large');
+                        break
                     case 'select':
                         if (enums[filed.enumName]) {
                             _text = enums.getText(filed.enumName, val);

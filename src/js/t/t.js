@@ -65,18 +65,18 @@ var config = {
             actions: ['list','info', 'search', 'add', 'upd'],
             type:'select'
         },
-        {
-            name: 'status2',
-            text: '子状态',
-            checkType: 'required',
-            enumName:'AWARD_STATUS_CHILD',
-            actions: ['list','info', 'search', 'add', 'upd'],
-            type:'select',
-            enumParent: 'status',
-            showFn: function (val, rowData) {
-                return '<a href="' + rowData.link + '">'+ val +'</a>'
-            }
-        },
+        // {
+        //     name: 'status2',
+        //     text: '子状态',
+        //     checkType: 'required',
+        //     enumName:'AWARD_STATUS_CHILD',
+        //     actions: ['list','info', 'search', 'add', 'upd'],
+        //     type:'select',
+        //     enumParent: 'status',
+        //     showFn: function (val, rowData) {
+        //         return '<a href="' + rowData.link + '">'+ val +'</a>'
+        //     }
+        // },
         {
             name: 'contents',
             text: '内容',
@@ -87,7 +87,15 @@ var config = {
             actions: ['batchAdd1', /*'search', */'list', 'add', 'upd', 'info'],
             selAll: true,
             isAddInfo: true
-        }],
+        },
+        {
+            name: 'editor',
+            text: '状态',
+            checkType: 'required',
+            actions: ['info', 'add', 'upd'],
+            type:'editor'
+        }
+    ],
     actions: [
         {action: 'search', text: '查询', url: '/manage/homepage/list'},
         {action:'info', text: '详情', url:'/manage/homepage/info'},

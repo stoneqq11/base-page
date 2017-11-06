@@ -227,7 +227,7 @@
 
 /*****************datatable***************************/
 .dataTables_wrapper .row:first-child {
-    float: right;
+    float: left;
     margin-top: 5px;
 }
 
@@ -284,7 +284,7 @@ thead > tr > th {
 
 /*****************button***************************/
 #search-btns {
-    float: left;
+    float: right;
     padding: 13px 0 0 0;
 }
 
@@ -413,4 +413,14 @@ a:link, a:visited {
 input[type=checkbox] {
     vertical-align: top;
     cursor: pointer;
+}
+
+
+.editor, #editor{
+    width: 100%;
+}
+
+.editor-info{
+    width: 100%;
+    max-height: 300px;
 }

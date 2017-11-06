@@ -801,6 +801,21 @@ var manageUtil = {
         });
     },
 
+    editorInit: function (_html, disable) {
+        var E = window.wangEditor
+        var now_editor = new E('#editor')
+        now_editor.customConfig.onchange = function (html) {
+            // html 即编辑器中的内容
+            console.log('onblur', html)
+            $('.editorval').val(html)
+        }
+        now_editor.create({})
+        now_editor.txt.html(_html)
+        if(disable) now_editor.$textElem.attr('contenteditable', false)
+        $('.w-e-menu').css({'zIndex': 10})
+        $('.w-e-text-container').css({'zIndex': 11})
+    },  
+
     buildNav: function (data, divider) {
         var nav = [];
         $.each(data, function (idx, item) {

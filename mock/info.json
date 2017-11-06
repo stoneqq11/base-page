@@ -11,6 +11,7 @@
 		"endTime": 1497929940058,
 		"status": 0,
 		"status2": 10,
-		"contents": [1, 16]
+        "contents": [1, 16],
+        "editor": "<p> 这是测试的<b>数据</b></p>"
 	}
 }
