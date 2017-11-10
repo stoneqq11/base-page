@@ -17,50 +17,55 @@ var config = {
             text: '排序',
             type: 'number',
             checkType: 'required number',
+            multi: true,
             actions: ['upd', 'add','list','info'/*, 'search'*/]
         },
         {
             name: 'image',
             text: '图片',
-            type: 'file',
+            type: 'img',
+            multi: true,
             checkType: 'required',
             actions: ['upd', 'add',/*'list',*/'info']
         },
+
         {
             name: 'title',
             text: '主题名称',
             // width: '200px',
             type: 'text',
-            checkType: 'required chinese',
+            // checkType: 'required chinese',
             attrs: {id: 1},
             actions: ['upd', 'add','list','info', 'batchAdd1', 'cust']
         },
-        {
-            name: 'rules',
-            text: '活动规则',
-            type: 'textarea',
-            checkType: 'required',
-            width: '300px',
-            actions: ['upd', 'add','list','info']
-        },
-        {
-            name: 'startTime',
-            text: '开始时间',
-            checkType: 'required',
-            type: 'date',
-            actions: ['upd', 'add','list','info', 'search', 'cust']
-        },
+        // {
+        //     name: 'rules',
+        //     text: '活动规则',
+        //     type: 'textarea',
+        //     checkType: 'required',
+        //     width: '300px',
+        //     actions: ['upd', 'add','list','info']
+        // },
+        // {
+        //     name: 'startTime',
+        //     text: '开始时间',
+        //     checkType: 'required',
+        //     type: 'date',
+        //     actions: ['upd', 'add','list','info', 'search', 'cust']
+        // },
         {
             name: 'endTime',
             text: '结束时间',
             checkType: 'required',
             type: 'time',
+            multi: true,
             actions: ['upd', 'add','list','info']
         },
         {
             name: 'status',
             text: '状态',
             checkType: 'required',
+            multi: true,
             enumName:'AWARD_STATUS',
             actions: ['list','info', 'search', 'add', 'upd'],
             type:'select'
@@ -77,24 +82,24 @@ var config = {
         //         return '<a href="' + rowData.link + '">'+ val +'</a>'
         //     }
         // },
-        {
-            name: 'contents',
-            text: '内容',
-            type: 'select',
-            enumName: '/manage/homepage/list',
-            enumId: 'id',
-            enumText: 'title',
-            actions: ['batchAdd1', /*'search', */'list', 'add', 'upd', 'info'],
-            selAll: true,
-            isAddInfo: true
-        },
-        {
-            name: 'editor',
-            text: '状态',
-            checkType: 'required',
-            actions: ['info', 'add', 'upd'],
-            type:'editor'
-        }
+        // {
+        //     name: 'contents',
+        //     text: '内容',
+        //     type: 'select',
+        //     enumName: '/manage/homepage/list',
+        //     enumId: 'id',
+        //     enumText: 'title',
+        //     actions: ['batchAdd1', /*'search', */'list', 'add', 'upd', 'info'],
+        //     selAll: true,
+        //     isAddInfo: true
+        // },
+        // {
+        //     name: 'editor',
+        //     text: '状态',
+        //     checkType: 'required',
+        //     actions: ['info', 'add', 'upd'],
+        //     type:'editor'
+        // }
     ],
     actions: [
         {action: 'search', text: '查询', url: '/manage/homepage/list'},

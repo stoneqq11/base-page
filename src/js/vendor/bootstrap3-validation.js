@@ -326,7 +326,7 @@
                     $(this).find("#autoreqmark").remove();
 
                     if ($.inArray('required', check_type) == -1 || !title) return;
-
+                    if (th.find('.valid-required').length !==0) return
                     th.html('<span class="valid-required">*</span>' + title);
                 });
             }

@@ -23,7 +23,7 @@
             color: {tpl: 'color-tpl', columnClz: 'align-center', type: 'text'},
             orderButton: {tpl: 'order-tpl', columnClz: 'align-center'},
             order: {tpl: 'input-tpl', columnClz: 'align-center'},
-            editor: {tpl: 'editor-init-tpl', columnClz: 'align-left'}            
+            editor: {tpl: 'editor-init-tpl', columnClz: 'align-left'}
         },
 
         // 默认操作对应的名称和显示位置
@@ -112,6 +112,7 @@
             //      onSelect {?function} 选择选项后回调，参数为选择项jquery object
             //      selectAll {?boolean} select是否有全部选择项,默认true
             //      initFromSearch {?boolean} 对于下拉框，新增是否初始化为当前查询条件的值
+            //      multi {?boolean} 是否为多输入，默认为false，多输入时后端数据传值为array
             // }, {}]
             fileds: [],
 
@@ -719,6 +720,42 @@
                 $('#common-modal')
                 .modal('show').find('.modal-dialog').addClass('large');
             });
+
+            $('.del-cur-filed', container).click(function(){
+                console.log($(this).parent().parent().children(), 88)
+                if($(this).parent().parent().children().length <= 2) return
+                var newDom = $(this).parent().remove()
+            })
+
+            $('.add-more-filed', container).click(function(){
+                var $this = $(this)
+                var name = $this.attr('name')
+                var fileds = $.extend(true, [], _this.config.fileds)
+                var filed = fileds.filter(function(item){
+                    return item.name == name
+                })
+                filed = filed[0] || {}
+                var messages = filed.checkMessage || {},
+                    id = constants.FILED_DEFAULT_MAP[filed.type].tpl
+                if ($.inArray(filed.type, ['date', 'time']) != -1) {
+                    filed.dataType = filed.type;
+                    filed.value = _this.formatColumn(filed.value, filed, 'upd');
+                }
+                if (filed.type == 'checkbox') {
+                    filed.value = (filed.value || []).join(CONSTANTS.CHECKBOX_SPLIT);
+                }
+                filed.type = constants.FILED_DEFAULT_MAP[filed.type].type || filed.type;
+
+                var appendTpl = '<div class="form-group  form-list-item form-list-'+ filed.type + '">'+
+                                MU.tpl(id, filed) + '<span class="del-cur-filed">删除</span></div>'
+
+                var newDom = $(appendTpl)
+                newDom.find('[name="' + filed.name + '"]').attr(messages)
+                _this.initPlugins(newDom, isAdd)
+                newDom.insertBefore($this)
+
+                $('#common-edit-form').validation();
+            })
         },
 
         /**
@@ -810,10 +847,10 @@
                 }
 
                 var param = $('#common-edit-form').serializeArray();
-				
+
                 action.beforeSubmit && action.beforeSubmit(param);
                 
-                $.post(action.url, param, function(bd){
+                $.post(action.url, formatP, function(bd){
                     _this.closeModal(bd, action);
                 });
             });
@@ -1175,7 +1212,7 @@
 
             $.each(fileds, function (idx, item) {
                 if ($.inArray(action, item.actions || []) == -1) return;
-
+            
                 // set value
                 if (action == 'add') { // init from search data
                     $.each(data, function (i, d) {
@@ -1208,17 +1245,39 @@
                 }
 
                 item.type = constants.FILED_DEFAULT_MAP[item.type].type || item.type;
-
+                
                 if (action == 'info') {
                     item.value = _this.formatColumn(item.value, item, 'info');
                     $tpl = $(MU.tpl('filed-info-tpl', item));
                 } else {
+                    var appendTpl = ''
+                    if (item.multi) {
+                            if($.isArray(item.value)) {
+                                item.value.forEach(function(it){
+                                    var t = $.extend(true, {}, item)
+                                    t.value = it
+                                    appendTpl += '<div class="form-group  form-list-item form-list-'+item.type+'">'+
+                                            MU.tpl(id, t) + '<span class="del-cur-filed">删除</span></div>'
+                                })
+                            } else {
+                                var t = $.extend(true, {}, item, data)
+                                appendTpl += '<div class="form-group  form-list-item form-list-'+item.type+'">'+
+                                        MU.tpl(id, t) + '<span class="del-cur-filed">删除</span></div>'
+                            }
+                            
+                            appendTpl += '<span class="add-more-filed" tplid="' + id +
+                            '" name="'+ item.name +
+                            '" check-type="' + (item.checkType||"") +
+                            '" type = "'+ item.type+
+                            '">增加</span>'
+                    } 
                     var $inp = $tpl
                         .find('.form-group')
-                        .append(MU.tpl(id, item))
+                        .removeClass(item.multi?'form-group':'')
+                        .append(appendTpl||MU.tpl(id, item))
                         .find('[name="' + item.name + '"]')
                         .attr(messages);
-                    item.attrs && $inp.attr(item.attrs);
+                        item.attrs && $inp.attr(item.attrs);
                 }
 
                 htm.push($tpl[0].outerHTML);
@@ -1260,11 +1319,23 @@
                         if(_.isNull(val)) {
                             _text = '';
                         } else {
-                            _text = new Date(val).format('yyyy-MM-dd hh:mm:ss');
+                            if ($.isArray(val)) {
+                                 val.forEach(function(item){   
+                                    _text += new Date(val).format('yyyy-MM-dd hh:mm:ss');
+                                })
+                            } else {
+                                _text = new Date(val).format('yyyy-MM-dd hh:mm:ss');
+                            }
                         }
                         break;
                     case 'img':
-                        _text = '<img src="' + val + '" alt="icon"/>';
+                        if ($.isArray(val)) {
+                            val.forEach(function(item){
+                                _text += '<img src="' + item + '" alt="icon" style="margin-right: 10px"/>';
+                            })
+                        } else {
+                            _text = '<img src="' + val + '" alt="icon"/>';
+                        }
                         break;
                     case 'editor':
                         _text = '<div class="editor-info">'+val+'</div>';

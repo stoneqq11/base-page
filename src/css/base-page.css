@@ -130,6 +130,8 @@
 .modify-table tr td {
     border:1px solid #ddd;
     padding:10px 0 10px 10px;
+    word-break: break-all;
+    position: relative;
 }
 .modify-table tr th {
     width:150px;
@@ -425,4 +427,61 @@ input[type=checkbox] {
 .editor-info{
     width: 100%;
     max-height: 300px;
+
+}
+
+.add-more-filed{
+    cursor: pointer;
+    height: 34px;
+    line-height: 34px;
+    display: block;
+    width: 70px;
+    background-color: #eee;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.del-cur-filed{
+    height: 34px;
+    line-height: 34px;
+    /*min-width: 40px;*/
+    cursor: pointer;
+}
+
+.form-group {
+    position: relative;
+}
+.form-group input, .form-group button{
+    display: inline-block;
+    margin-bottom: 10px;
+}
+.form-group .del-cur-filed{
+    position: absolute;
+    left: 85%;
+    top: 0;
+    cursor: pointer;
+    height: 34px;
+    line-height: 34px;
+}
+
+.form-list-img{
+    max-width: 100px;
+    display: inline-block;
+    padding-bottom: 40px;
+    padding-right: 10px;
+    vertical-align: bottom;
+}
+.form-list-img :last-child :after{
+    clear: both;
+}
+.form-list-img img{
+    max-width: 80%;
+}
+.form-list-img .del-cur-filed{
+    position: absolute;
+    bottom: 0;
+    top: auto;
+    cursor: pointer;
+    left: 50%;
+    transform: translate(-50%, 0);
 }
