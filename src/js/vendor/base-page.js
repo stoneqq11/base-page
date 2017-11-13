@@ -849,7 +849,7 @@
 
                 action.beforeSubmit && action.beforeSubmit(param);
                 
-                $.post(action.url, formatP, function(bd){
+                $.post(action.url, param, function(bd){
                     _this.closeModal(bd, action);
                 });
             });
