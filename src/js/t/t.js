@@ -93,13 +93,13 @@ var config = {
         //     selAll: true,
         //     isAddInfo: true
         // },
-        // {
-        //     name: 'editor',
-        //     text: '状态',
-        //     checkType: 'required',
-        //     actions: ['info', 'add', 'upd'],
-        //     type:'editor'
-        // }
+        {
+            name: 'editor',
+            text: '状态',
+            checkType: 'required',
+            actions: ['info', 'add', 'upd'],
+            type:'editor'
+        }
     ],
     actions: [
         {action: 'search', text: '查询', url: '/manage/homepage/list'},

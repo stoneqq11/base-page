@@ -426,8 +426,7 @@ input[type=checkbox] {
 
 .editor-info{
     width: 100%;
-    max-height: 300px;
-
+    max-height: 400px;
 }
 
 .add-more-filed{

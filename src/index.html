@@ -184,11 +184,12 @@
         value="{{= data.value}}" check-type="{{= data.checkType}}"/>
 </script>
 <script id="editor-init-tpl" type="text/template">
-    <div class="modify-icon {{= data.type}}">
+    <div class="modify-icon editor-info {{= data.type}}">
         <div id="editor">
         </div>
-        <input type="hidden" class="form-control editorval" name="{{= data.name}}"
-            value="{{= data.value}}" check-type="{{= data.checkType}}"/>
+        <input type="hidden" class="form-control editorval" name="'{{= data.name}}'"
+        value="" check-type="{{= data.checkType}}"/>
+        <div class="editor-clz-value" style="display: none">{{= data.value}}</div>
     </div>
 </script>
 <!-- other templates -->

@@ -710,10 +710,10 @@
             })
 
             //editor
-            $('.editor', container).each(function(){
+            $('.editor-info', container).each(function(){
                 var $this = $(this),
-                    _html = $('.editorval').val();
-                console.log('_this.config', _this.config)
+                    _html = $('.editor-clz-value', $this).html();
+                    $('.editorval', $this).val(_html)
                 MU.editorInit(_html, _this.config)
                 
                 $('#common-modal')
