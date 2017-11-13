@@ -678,7 +678,6 @@
             $('.browse-file', container).each(function(){
                 var $this = $(this),
                     _url = $this.siblings('.url-hide').val();
-
                 pluginUtil.uploadFile($this, function(data){
                     var json = JSON.parse(data),
                         url = json.value;
@@ -1260,7 +1259,7 @@
                                             MU.tpl(id, t) + '<span class="del-cur-filed">删除</span></div>'
                                 })
                             } else {
-                                var t = $.extend(true, {}, item, data)
+                                var t = $.extend(true, {}, item)
                                 appendTpl += '<div class="form-group  form-list-item form-list-'+item.type+'">'+
                                         MU.tpl(id, t) + '<span class="del-cur-filed">删除</span></div>'
                             }
