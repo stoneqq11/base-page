@@ -1045,7 +1045,8 @@
 
                 var jsonParam = {jsonParams: JSON.stringify({
                     currentData: $o.data(),
-                    selectData: selected
+                    selectData: selected,
+                    formData: $('#search-form', window.frames['selectFrame'].document).serializeArray()
                 })}
 
                 if (action.url) {

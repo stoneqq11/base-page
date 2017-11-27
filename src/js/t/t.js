@@ -183,7 +183,7 @@ var config = {
             clz: 'info',
             url: '/manage/homepage/select',
             selectChild: {
-                pageUrl: '/index.html?page=t-t&pageNumber=100'
+                pageUrl: '/page/t/t?pageNumber=100'
             }
         },
         {
