@@ -14,15 +14,19 @@
 查询：
 
 request:
-<code>page=t-t&start=0&length=25&_=1499134580457</code>
+```
+page=t-t&start=0&length=25&_=1499134580457
+```
 
 response:
-<code>{code: 200, value: {data: [{}...], total: 1000}, message: ""}</code>
+```
+{code: 200, value: {data: [{}...], total: 1000}, message: ""}
+```
 
 编辑：
 
 request(Form Data):
-<code>
+```
 id:1
 sort:1
 image:https://ss1.bdstatic.com/5eN1bjq8AAUYm2zgoY3K/r/www/cache/static/protocol/https/home/img/qrcode/zbios_efde696.png
@@ -30,18 +34,24 @@ title:title1
 rules:rules
 startTime:2017-06-20
 endTime:2017-06-20 11:39:00
-</code>
+```
 
 response:
-<code>{code: 200, value: null, message: ""}</code>
+```
+{code: 200, value: null, message: ""}
+```
 
 详情：
 
 request:
-<code>page=t-t&id=1</code>
+```
+page=t-t&id=1
+```
 
 response:
-<code>{code: 200, value: {title: '',...}, message: ""}</code>
+```
+{code: 200, value: {title: '',...}, message: ""}
+```
 
 
 <h2>配置</h2>
