@@ -155,6 +155,13 @@
 			<td>否</td>
 			<td>通过该接口处理界面要显示的内容</td>
 		</tr>
+		<tr>
+		    <td>multi</td>
+			<td>multi: true</td>
+			<td>boolean</td>
+			<td>否</td>
+			<td>例如图片字段配置后可以添加多张</td>
+		</tr>
 	</tbody>
 </table>
 
