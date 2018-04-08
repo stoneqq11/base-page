@@ -747,7 +747,8 @@ var manageUtil = {
             name = data.name,
             selAllId,
             $value = $check.find('[name='+name+'_check]'),
-            values = ($value.val() || '').split(CONSTANTS.CHECKBOX_SPLIT)
+            values = ($value.val() || '').split(CONSTANTS.CHECKBOX_SPLIT),
+            isSearch = $check.parent().hasClass('input-group')
 
         for (var i = 0; i < enumDatas.length; i++) {
             var d = enumDatas[i]
@@ -758,21 +759,34 @@ var manageUtil = {
         }
 
         if (data.selAll) {
-            selAllId = 'selAll_' + name
+            selAllId = 'selAll_' + name + (isSearch ? '_search' : '')
             _html.unshift('<div class="sel-all"><input type="checkbox" id="' 
                 + selAllId + '" /><label for="' + selAllId + '">全选</label></div>')
         }
 
         $check.append(_html.join(''))
 
+        if (isSearch) {
+            $check.parent().append('<div class="select-check"><span class="select-vals"></span><span class="caret"></span></div>')
+            $check.next().off('click').click(function() {
+                $(this).prev().toggleClass('show')
+            })
+        }
+
         var $items = $check.find('input[type=checkbox]:not(#' + selAllId + ')')
         $check.find(':checkbox').off('click').click(function(){
             setTimeout(function(){
                 var vs = []
+                var ts = []
                 $items.filter(':checked').each(function(){
                     vs.push($(this).val())
+                    ts.push($(this).next().html())
                 })
                 $value.val(vs.join(CONSTANTS.CHECKBOX_SPLIT))
+
+                if ($check.next().hasClass('select-check')) {
+                    $check.next().find('.select-vals').text(ts.join(','))
+                }
             }, 0)
         })
 

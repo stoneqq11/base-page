@@ -99,6 +99,14 @@ var config = {
             checkType: 'required',
             actions: ['info', 'add', 'upd'],
             type:'editor'
+        },
+        {
+            name: 'cps',
+            text: 'cp',
+            type: 'checkbox',
+            enumName: '/manage/homepage/list',
+            actions: ['search', 'add'],
+            selAll: true
         }
     ],
     actions: [

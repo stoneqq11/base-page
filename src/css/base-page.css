@@ -93,6 +93,43 @@
     overflow: hidden;
 }
 
+.search-form .checkbox .checkbox-wrap {
+    display: none;
+    position: absolute;
+    top: 33px;
+    left: 0;
+    z-index: 1;
+    margin: 0;
+    background: #fff;
+}
+
+.search-form .checkbox .checkbox-wrap input[type=checkbox] {
+    margin-left: 0;
+}
+
+.search-form .checkbox .select-check {
+    width: 205px;
+    display: inline-block;
+    height: 33px;
+    line-height: 33px;
+    padding: 0 5px;
+    border: solid 1px #ccc;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    cursor: pointer;
+    text-align: right;
+}
+
+.search-form .checkbox .select-vals {
+    text-align: left;
+    display: inline-block;
+    width: 92%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    vertical-align: middle;
+}
+
 /*****************bottom***************************/
 .manage-bottom {
     margin: 0;
