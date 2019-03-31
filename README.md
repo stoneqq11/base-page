@@ -55,4 +55,4 @@ response:
 
 
 <h2>配置</h2>
-CONFIG.md：<a href="http://gitlab.meizu.com/shiquan/base-page/blob/master/CONFIG.md">配置</a>
+[配置CONFIG.md](https://github.com/stoneqq11/base-page/blob/master/CONFIG.md)
