@@ -1,15 +1,15 @@
-<h2>运行</h2>
+#### 运行
 1. npm install
 2. node server/app
 3. localhost/page/t/t
 
-<h2>接入后台系统</h2>
+##### 接入后台系统
 1. MANAGE标题、用户名--/index.html中修改
 2. 菜单--/menu.json中配置
 3. 登录由服务端控制，接口请求返回code=401，会做登陆跳转
 4. 上传接口--/src/js/vendor/public.js中upload function中修改
 
-<h2>接口数据格式</h2>
+#### 接口数据格式
 
 查询：
 
@@ -54,5 +54,5 @@ response:
 ```
 
 
-<h2>配置</h2>
-[配置CONFIG.md](https://github.com/stoneqq11/base-page/blob/master/CONFIG.md)
+#### 配置
+[config](https://github.com/stoneqq11/base-page/blob/master/CONFIG.md)
